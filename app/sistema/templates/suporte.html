@@ -1,0 +1,47 @@
+{% extends "base.html" %}{% block titulo %}Menu de suporte{% endblock %}
+{% block conteudo %}
+<h1 id="inicio" tabindex="-1">Menu de suporte</h1>
+<nav aria-label="Assuntos"><ul>
+  <li><a href="#titularidade">Mudança de titularidade</a></li>
+  <li><a href="#link">Link vencido ou já usado</a></li>
+  <li><a href="#pendencia">Responder a uma pendência</a></li>
+  <li><a href="#proprietario">Área do condômino: locatário</a></li>
+  <li><a href="#acesso">Não consigo abrir a Área do condômino</a></li>
+  <li><a href="#contatos">Atualizar e-mail, telefone ou endereço</a></li>
+  <li><a href="#contestacao">Recebi aviso de um pedido que não reconheço</a></li>
+  <li><a href="#assistido">Atendimento por uma pessoa</a></li>
+</ul></nav>
+
+<section aria-labelledby="titularidade"><h2 id="titularidade" tabindex="-1">Mudança de titularidade</h2>
+<ol>
+  <li>Peça o link informando condomínio, unidade, seu nome, CPF ou CNPJ e e-mail.</li>
+  <li>Abra o link em até 2 horas e clique em <strong>Continuar</strong>.</li>
+  <li>Anexe a identidade e a certidão de matrícula (emitida há até 30 dias) ou o contrato com firma reconhecida ou assinatura digital. Com contrato, informe a data da entrega das chaves.</li>
+  <li>Você pode salvar e voltar depois: o rascunho fica guardado por 30 dias. Para voltar, peça um novo link com o mesmo e-mail.</li>
+  <li>Depois de enviar, você recebe o comprovante por e-mail. O próximo e-mail chega só se faltar algum item ou quando o pedido for concluído ou recusado.</li>
+</ol></section>
+
+<section aria-labelledby="link"><h2 id="link" tabindex="-1">Link vencido ou já usado</h2>
+<p>Cada link vale 2 horas e uma única vez. Peça outro na <a href="{{ url_for('titularidade.pedir_link') }}">página de pedido</a>, com o mesmo e-mail e CPF ou CNPJ: o que você já tinha salvo continua guardado por 30 dias. São até 3 links por hora.</p></section>
+
+<section aria-labelledby="pendencia"><h2 id="pendencia" tabindex="-1">Responder a uma pendência</h2>
+<p>O e-mail de pendência lista o que falta. Na mudança de titularidade, peça um novo link com o mesmo e-mail e CPF ou CNPJ: ele abre a tela de resposta. No pedido de locatário, responda pela Área do condômino. A resposta devolve o pedido à conferência. Sem resposta em 30 dias, o pedido é encerrado, e você pode fazer um novo.</p></section>
+
+<section aria-labelledby="proprietario"><h2 id="proprietario" tabindex="-1">Área do condômino: incluir ou retirar locatário</h2>
+<p>No site, clique em "Área do condômino" e entre com sua conta do condômino (a mesma do aplicativo). Só o proprietário da unidade inclui ou retira locatário. Para incluir, tenha em mãos os dados do locatário e o contrato de locação; para informar a saída, não é preciso documento.</p></section>
+
+<section aria-labelledby="acesso"><h2 id="acesso" tabindex="-1">Não consigo abrir a Área do condômino</h2>
+<p>A área abre logo depois de você entrar com sua conta do condômino. Se aparecer "acesso negado", entre de novo pelo link "Área do condômino". Depois de várias tentativas com erro, o acesso fica bloqueado por 15 minutos neste dispositivo.</p></section>
+
+<section aria-labelledby="contatos"><h2 id="contatos" tabindex="-1">Atualizar e-mail, telefone ou endereço</h2>
+<p>Entre em <a href="{{ url_meus_dados }}">Meus dados</a>, na sua conta do condômino. A equipe confere a alteração antes de levá-la ao cadastro da administradora; se não for aceita, você recebe um e-mail com o motivo.</p></section>
+
+<section aria-labelledby="contestacao"><h2 id="contestacao" tabindex="-1">Recebi aviso de um pedido que não reconheço</h2>
+<p>Se você é proprietário e não vendeu a unidade, use o link "Não reconheço este pedido" do e-mail. O pedido só é concluído depois de a equipe analisar a contestação.</p></section>
+
+<section aria-labelledby="assistido"><h2 id="assistido" tabindex="-1">Prefere ser atendido por uma pessoa?</h2>
+<p>O Cadastro e Emissão registra o pedido por você (atendimento assistido). Fale pelos canais oficiais da Condeza:</p>
+<ul><li>Telefone: (11) 3000-0000, dias úteis, das 8h às 18h (fictício)</li><li>E-mail: cadastro@condeza.test (fictício)</li></ul></section>
+<p class="aviso">A Condeza nunca pede senha nem pagamento por e-mail.</p>
+{% endblock %}
+{% block secao_suporte %}inicio{% endblock %}

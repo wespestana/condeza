@@ -1,0 +1,9 @@
+{% extends "base.html" %}{% block titulo %}Informar saída do locatário{% endblock %}
+{% block conteudo %}
+<p><a href="{{ url_for('proprietario.area') }}">Voltar à Área do condômino</a></p>
+<h1>Informar a saída do locatário</h1>
+<p>Unidade {{ unidade.tipo }} {{ unidade.numero }}{{ ', Bloco ' ~ unidade.bloco if unidade.bloco }}.</p>
+<p>Depois da conferência, <strong>{{ locatario.nome }}</strong> deixa de ser responsável pela unidade no cadastro da administradora e no aplicativo do condomínio. Não é preciso enviar documento.</p>
+<form method="post"><button>Confirmar a saída de {{ locatario.nome }}</button></form>
+{% endblock %}
+{% block secao_suporte %}proprietario{% endblock %}

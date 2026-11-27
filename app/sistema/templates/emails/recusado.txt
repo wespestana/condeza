@@ -1,0 +1,7 @@
+Olá, {{ pedido.solicitante_nome }}.
+
+O pedido {{ pedido.numero }} foi recusado.
+Motivo: {{ pedido.motivo_recusa }}
+
+Você pode fazer um novo pedido quando quiser. Se precisar de ajuda, fale com a Condeza pelos canais oficiais.
+A Condeza nunca pede senha nem pagamento por e-mail.

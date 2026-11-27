@@ -1,0 +1,215 @@
+{
+  "_aviso": "Dados fictícios para fins acadêmicos (RNF03). Mesmas pessoas dos documentos de teste em ia-teste/documentos.",
+  "condominios": [
+    {
+      "id": 1,
+      "nome": "Condomínio Edifício Jardim das Acácias",
+      "endereco": "Rua das Palmeiras Imperiais, 450 – Cerqueira César",
+      "dia_emissao": 20,
+      "gerente": "gerente.carteira1@condeza.test"
+    },
+    {
+      "id": 2,
+      "nome": "Condomínio Residencial Vila Serena",
+      "endereco": "Rua Doutor Elias Monteiro, 1.200 – Vila Mariana",
+      "dia_emissao": 25,
+      "gerente": "gerente.carteira2@condeza.test"
+    },
+    {
+      "id": 3,
+      "nome": "Condomínio Parque das Figueiras",
+      "endereco": "Avenida Professor Lineu Prestes Filho, 2.310",
+      "dia_emissao": 15,
+      "gerente": "gerente.carteira1@condeza.test"
+    },
+    {
+      "id": 4,
+      "nome": "Condomínio Residencial Bosque do Ipê",
+      "endereco": "Rua Nebulosa, 77 – Jardim Prudência",
+      "dia_emissao": 10,
+      "gerente": "gerente.carteira2@condeza.test"
+    }
+  ],
+  "unidades": [
+    {
+      "id": 101,
+      "condominio_id": 1,
+      "tipo": "Apartamento",
+      "numero": "52",
+      "bloco": "B",
+      "fracao_ideal": "0,9850%",
+      "responsaveis": [
+        {
+          "nome": "Ana Lúcia Ferreira",
+          "cpf_cnpj": "104.332.181-00",
+          "email": "ana.ferreira@exemplo.test",
+          "telefone": "(11) 90000-0101",
+          "papel": "proprietario",
+          "pagador": true,
+          "desde": "2014-08-07"
+        }
+      ],
+      "debitos": [
+        {
+          "competencia": "2026-09",
+          "descricao": "Cota condominial ordinária",
+          "valor": "612,40",
+          "situacao": "em aberto"
+        }
+      ]
+    },
+    {
+      "id": 102,
+      "condominio_id": 1,
+      "tipo": "Apartamento",
+      "numero": "53",
+      "bloco": "B",
+      "fracao_ideal": "0,9850%",
+      "responsaveis": [
+        {
+          "nome": "Otávio Brandão Lessa",
+          "cpf_cnpj": "158.813.998-03",
+          "email": "otavio.lessa@exemplo.test",
+          "telefone": "(11) 90000-0102",
+          "papel": "proprietario",
+          "pagador": true,
+          "desde": "2016-03-01"
+        }
+      ]
+    },
+    {
+      "id": 103,
+      "condominio_id": 1,
+      "tipo": "Apartamento",
+      "numero": "12",
+      "bloco": "A",
+      "fracao_ideal": "0,9120%",
+      "responsaveis": [
+        {
+          "nome": "Helena Duarte Campos",
+          "cpf_cnpj": "698.797.309-17",
+          "email": "helena.campos@exemplo.test",
+          "telefone": "(11) 90000-0103",
+          "papel": "proprietario",
+          "pagador": true,
+          "desde": "2012-05-10"
+        },
+        {
+          "nome": "Igor Matias Prado",
+          "cpf_cnpj": "114.170.753-50",
+          "email": "igor.prado@exemplo.test",
+          "telefone": "(11) 90000-0104",
+          "papel": "locatario",
+          "pagador": false,
+          "desde": "2025-02-01"
+        }
+      ]
+    },
+    {
+      "id": 201,
+      "condominio_id": 2,
+      "tipo": "Apartamento",
+      "numero": "134",
+      "bloco": null,
+      "fracao_ideal": "1,2040%",
+      "responsaveis": [
+        {
+          "nome": "Paulo Roberto Siqueira",
+          "cpf_cnpj": "083.863.794-99",
+          "email": "paulo.siqueira@exemplo.test",
+          "telefone": "(11) 90000-0201",
+          "papel": "proprietario",
+          "pagador": true,
+          "desde": "2010-06-22"
+        },
+        {
+          "nome": "Márcia Aparecida Siqueira",
+          "cpf_cnpj": "026.542.351-14",
+          "email": "marcia.siqueira@exemplo.test",
+          "telefone": "(11) 90000-0202",
+          "papel": "proprietario",
+          "pagador": false,
+          "desde": "2010-06-22"
+        }
+      ]
+    },
+    {
+      "id": 202,
+      "condominio_id": 2,
+      "tipo": "Apartamento",
+      "numero": "21",
+      "bloco": null,
+      "fracao_ideal": "1,1010%",
+      "responsaveis": [
+        {
+          "nome": "Vera Lúcia Antunes",
+          "cpf_cnpj": "645.568.151-77",
+          "email": "vera.antunes@exemplo.test",
+          "telefone": "(11) 90000-0203",
+          "papel": "proprietario",
+          "pagador": true,
+          "desde": "2018-09-14"
+        }
+      ]
+    },
+    {
+      "id": 301,
+      "condominio_id": 3,
+      "tipo": "Apartamento",
+      "numero": "71",
+      "bloco": "2",
+      "fracao_ideal": "0,7400%",
+      "responsaveis": [
+        {
+          "nome": "Sérgio Antunes Bragança",
+          "cpf_cnpj": "557.616.987-57",
+          "email": "sergio.braganca@exemplo.test",
+          "telefone": "(11) 90000-0301",
+          "papel": "proprietario",
+          "pagador": true,
+          "desde": "2011-11-30"
+        }
+      ]
+    },
+    {
+      "id": 401,
+      "condominio_id": 4,
+      "tipo": "Apartamento",
+      "numero": "304",
+      "bloco": "A",
+      "fracao_ideal": "0,5300%",
+      "responsaveis": [
+        {
+          "nome": "Incorporadora Monte Alegre Ltda.",
+          "cpf_cnpj": "52.601.815/0001-20",
+          "email": "contato@montealegre.test",
+          "telefone": "(11) 3000-0401",
+          "papel": "proprietario",
+          "pagador": true,
+          "desde": "2024-01-15"
+        }
+      ]
+    },
+    {
+      "id": 402,
+      "condominio_id": 4,
+      "tipo": "Apartamento",
+      "numero": "305",
+      "bloco": "A",
+      "fracao_ideal": "0,5300%",
+      "responsaveis": [
+        {
+          "nome": "Nádia Ferraz Quintela",
+          "cpf_cnpj": "884.472.940-72",
+          "email": "nadia.quintela@exemplo.test",
+          "telefone": "(11) 90000-0402",
+          "papel": "proprietario",
+          "pagador": true,
+          "desde": "2024-06-01"
+        }
+      ]
+    }
+  ],
+  "emissoes": [],
+  "historico": []
+}

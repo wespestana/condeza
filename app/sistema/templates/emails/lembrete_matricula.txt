@@ -1,0 +1,10 @@
+Olá, {{ pedido.solicitante_nome }}.
+
+No pedido {{ pedido.numero }}, você consta como responsável pela unidade com base no contrato de compra e venda.
+O boleto continua em nome do proprietário registrado até a matrícula mostrar a venda.
+
+Quando o registro sair no cartório, envie a certidão da matrícula por um novo pedido:
+{{ url }}
+
+Este lembrete é mensal e para quando a matrícula for recebida.
+A Condeza nunca pede senha nem pagamento por e-mail.

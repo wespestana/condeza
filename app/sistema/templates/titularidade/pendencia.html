@@ -1,0 +1,44 @@
+{% extends "base.html" %}{% from "_campos.html" import resumo_erros %}
+{% block titulo %}Responder à pendência{% endblock %}
+{% block conteudo %}
+<h1>Pedido {{ pedido.numero }}: responder à pendência</h1>
+<p>Solicitante: <strong>{{ pedido.solicitante_nome }}</strong> · {{ pedido.solicitante_cpf_cnpj }}</p>
+<section aria-labelledby="t-falta">
+  <h2 id="t-falta">O que falta</h2>
+  <ul>{% for x in abertas %}<li>{{ x.descricao }}</li>{% endfor %}</ul>
+</section>
+{{ resumo_erros(erros) }}
+<form method="post" enctype="multipart/form-data" novalidate>
+  <fieldset>
+    <legend>Documentos</legend>
+    <p class="ajuda">Anexe só o que for trocar. Os documentos já enviados continuam no pedido.</p>
+    {% for campo_doc, rotulo in [('identidade', 'Documento de identidade'), ('matricula', 'Certidão de matrícula (emitida há até 30 dias)'), ('contrato', 'Contrato de compra e venda')] %}
+      {% set d = docs.get(campo_doc) %}
+      <div class="campo">
+        {% if d %}<p class="anexado">Já enviado: {{ d.nome_original }}</p>{% endif %}
+        <label for="{{ campo_doc }}">{{ rotulo }}: {{ 'enviar outro arquivo' if d else 'anexar' }} (PDF ou foto)</label>
+        <input id="{{ campo_doc }}" name="{{ campo_doc }}" type="file" accept="application/pdf,image/jpeg,image/png" {% if campo_doc in erros %}aria-invalid="true" aria-describedby="{{ campo_doc }}-erro"{% endif %}>
+        {% if campo_doc in erros %}<p class="erro" id="{{ campo_doc }}-erro">{{ erros[campo_doc] }}</p>{% endif %}
+      </div>
+    {% endfor %}
+  </fieldset>
+  <fieldset>
+    <legend>Dados</legend>
+    <p>Comprovante do pedido:</p>
+    <label class="opcao"><input type="radio" name="tipo_comprovante" value="matricula" {{ 'checked' if pedido.tipo_comprovante == 'matricula' }}> Certidão de matrícula</label>
+    <label class="opcao"><input type="radio" name="tipo_comprovante" value="contrato" {{ 'checked' if pedido.tipo_comprovante == 'contrato' }}> Contrato de compra e venda</label>
+    <div class="campo">
+      <label for="data_chaves">Data da entrega das chaves (obrigatória com contrato)</label>
+      <input id="data_chaves" name="data_chaves" type="date" value="{{ pedido.data_chaves or '' }}" {% if 'data_chaves' in erros %}aria-invalid="true" aria-describedby="data_chaves-erro"{% endif %}>
+      {% if 'data_chaves' in erros %}<p class="erro" id="data_chaves-erro">{{ erros.data_chaves }}</p>{% endif %}
+    </div>
+  </fieldset>
+  <div class="campo">
+    <label for="resposta">Mensagem para a equipe (opcional)</label>
+    <textarea id="resposta" name="resposta" rows="3" maxlength="2000" {% if 'resposta' in erros %}aria-invalid="true" aria-describedby="resposta-erro"{% endif %}>{{ dados.get('resposta', '') }}</textarea>
+    {% if 'resposta' in erros %}<p class="erro" id="resposta-erro">{{ erros.resposta }}</p>{% endif %}
+  </div>
+  <div class="acoes"><button>Enviar a resposta</button></div>
+</form>
+{% endblock %}
+{% block secao_suporte %}pendencia{% endblock %}

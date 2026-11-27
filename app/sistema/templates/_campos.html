@@ -1,0 +1,13 @@
+{% macro campo(nome, rotulo, erros, dados={}, tipo="text", ajuda=None, attrs="") %}
+<div class="campo{{ ' com-erro' if nome in erros }}">
+  <label for="{{ nome }}">{{ rotulo }}</label>
+  {% if ajuda %}<p class="ajuda" id="{{ nome }}-ajuda">{{ ajuda }}</p>{% endif %}
+  <input id="{{ nome }}" name="{{ nome }}" type="{{ tipo }}" value="{{ dados.get(nome) or '' }}" {{ attrs|safe }}
+    {% if nome in erros %}aria-invalid="true" aria-describedby="{{ nome }}-erro"{% elif ajuda %}aria-describedby="{{ nome }}-ajuda"{% endif %}>
+  {% if nome in erros %}<p class="erro" id="{{ nome }}-erro">{{ erros[nome] }}</p>{% endif %}
+</div>
+{% endmacro %}
+{% macro resumo_erros(erros) %}
+{% if erros %}<div class="alerta" role="alert" tabindex="-1" autofocus><strong>Confira os itens abaixo:</strong>
+<ul>{% for k, v in erros.items() %}<li><a href="#{{ k }}">{{ v }}</a></li>{% endfor %}</ul></div>{% endif %}
+{% endmacro %}

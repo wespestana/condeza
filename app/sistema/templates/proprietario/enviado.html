@@ -1,0 +1,13 @@
+{% extends "base.html" %}{% block titulo %}Pedido recebido{% endblock %}
+{% block conteudo %}
+{% if repetido %}
+<h1>Já existe um pedido em conferência</h1>
+<p>O pedido {{ pedido.numero }}, para esta mesma pessoa e unidade, ainda está em conferência. Não é preciso enviar de novo.</p>
+{% else %}
+<h1>Pedido recebido</h1>
+<p class="sucesso" role="status">Pedido <strong>{{ pedido.numero }}</strong> recebido em {{ pedido.recebido_em.strftime('%d/%m/%Y às %H:%M') }}.</p>
+<p>Enviamos o comprovante para o seu e-mail. Você recebe outro e-mail quando o pedido for concluído ou se faltar algum item.</p>
+{% endif %}
+<p><a href="{{ url_for('proprietario.area') }}">Voltar à Área do condômino</a></p>
+{% endblock %}
+{% block secao_suporte %}proprietario{% endblock %}

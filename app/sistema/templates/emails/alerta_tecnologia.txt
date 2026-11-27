@@ -1,0 +1,7 @@
+Alerta automático do sistema de titularidade.
+
+A gravação do pedido {{ pedido.numero }} no {{ servico }} falhou.
+Erro: {{ erro }}
+
+O sistema está em modo degradado: continua recebendo e analisando pedidos, mas não conclui os aprovados até a integração voltar.
+Depois de corrigir, use "Reprocessar gravação" na esteira; o sistema também tenta de novo a cada 5 minutos.

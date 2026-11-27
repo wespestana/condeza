@@ -1,0 +1,1 @@
+ALTER TABLE campo MODIFY atendido TINYINT(1) NULL;

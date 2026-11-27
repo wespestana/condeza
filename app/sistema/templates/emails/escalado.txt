@@ -1,0 +1,9 @@
+Pedido {{ pedido.numero }} ({{ pedido.tipo.value.replace('_', ' ') }}), condomínio {{ condominio }}, foi escalado para sua decisão.
+
+Dúvida registrada pelo Cadastro e Emissão:
+{{ duvida }}
+
+Registre a decisão, informando se consultou o jurídico:
+{{ url }}
+
+O prazo de conclusão continua correndo enquanto o pedido está escalado.

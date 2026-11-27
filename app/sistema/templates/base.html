@@ -1,0 +1,57 @@
+{% from "_logo.html" import logo %}<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block titulo %}Condeza{% endblock %} · Condeza</title>
+  <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='favicon.svg') }}">
+  <link rel="preload" href="{{ url_for('static', filename='fontes/nunito-latin.woff2') }}" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="{{ url_for('static', filename='estilo.css') }}">
+  <script src="{{ url_for('static', filename='formularios.js') }}" defer></script>
+  <script>try { if (localStorage.getItem("contraste") === "alto") document.documentElement.dataset.contraste = "alto"; } catch (e) {}</script>
+</head>
+<body>
+  <a class="pular" href="#conteudo">Pular para o conteúdo</a>
+  {% block barra_util %}
+  <div class="barra-util"><div class="barra-util-dentro">
+    <span class="so-tela-larga">Atendimento: (11) 3000-0000 · dias úteis, 8h às 18h</span>
+    <nav aria-label="Atalhos do condômino"><a href="{{ url_for('site.condominos') }}#boleto">2ª via de boleto</a>
+    <a class="destaque" href="{{ url_entrar_proprietario }}">Área do condômino</a></nav>
+  </div></div>
+  {% endblock %}
+  <header class="topo"><div class="topo-dentro">
+    <a class="logotipo" href="{{ url_for('site.inicio') }}" aria-label="Condeza, administração de condomínios: início">{{ logo(52) }}<span><span class="nome">Condeza</span><span class="lema">administração de condomínios</span></span></a>
+    {% block menu %}
+    {% set atual = request.endpoint or '' %}
+    <nav class="menu-site" aria-label="Site da Condeza"><ul>
+      <li><a href="{{ url_for('site.inicio') }}" {{ 'aria-current="page"'|safe if atual == 'site.inicio' }}>Início</a></li>
+      <li><a href="{{ url_for('site.quem_somos') }}" {{ 'aria-current="page"'|safe if atual == 'site.quem_somos' }}>Quem somos</a></li>
+      <li><a href="{{ url_for('site.condominos') }}" {{ 'aria-current="page"'|safe if atual == 'site.condominos' }}>Para condôminos</a></li>
+      <li><a href="{{ url_for('site.sindicos') }}" {{ 'aria-current="page"'|safe if atual == 'site.sindicos' }}>Para síndicos</a></li>
+      <li><a href="{{ url_for('site.contato') }}" {{ 'aria-current="page"'|safe if atual == 'site.contato' }}>Contato</a></li>
+      <li><a href="{{ url_for('suporte') }}" {{ 'aria-current="page"'|safe if atual == 'suporte' }}>Ajuda</a></li>
+    </ul></nav>
+    {% endblock %}
+    <button type="button" class="botao-contraste" data-alternar-contraste aria-pressed="false" hidden>Alto contraste</button>
+  </div></header>
+  <main id="conteudo" class="{% block classe_main %}{% endblock %}">{% block conteudo %}{% endblock %}</main>
+  {% block rodape %}
+  <footer class="rodape"><div class="rodape-dentro">
+    <div><span class="nome">Condeza</span><p>Administração de condomínios residenciais e comerciais em São Paulo, desde 1996.</p></div>
+    <div><h2>Para moradores</h2>
+      <p><a href="{{ url_for('titularidade.pedir_link') }}">Mudança de titularidade</a></p>
+      <p><a href="{{ url_entrar_proprietario }}">Área do condômino</a></p>
+      <p><a href="{{ url_for('site.condominos') }}#boleto">2ª via de boleto</a></p></div>
+    <div><h2>Para síndicos</h2>
+      <p><a href="{{ url_for('site.sindicos') }}">O que fazemos pelo condomínio</a></p>
+      <p><a href="{{ url_for('site.contato') }}#proposta">Solicitar uma proposta</a></p></div>
+    <div><h2>Atendimento</h2>
+      <p>(11) 3000-0000 · dias úteis, 8h às 18h</p><p>cadastro@condeza.test</p>
+      <p><a href="{{ url_for('suporte') }}#{% block secao_suporte %}inicio{% endblock %}">Ajuda sobre este passo</a></p></div>
+    <p class="aviso"><strong>A Condeza nunca pede senha nem pagamento por e-mail.</strong> Desconfie de mensagens com outros contatos.
+      · <a href="{{ url_for('site.privacidade') }}">Privacidade e proteção de dados</a>
+      · Empresa, pessoas e dados fictícios, para trabalho acadêmico.</p>
+  </div></footer>
+  {% endblock %}
+</body>
+</html>

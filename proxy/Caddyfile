@@ -1,0 +1,19 @@
+{$DOMINIO} {
+	encode gzip
+	header {
+		Strict-Transport-Security "max-age=31536000"
+		X-Content-Type-Options "nosniff"
+		X-Frame-Options "DENY"
+		Referrer-Policy "strict-origin-when-cross-origin"
+		-Server
+	}
+	handle /caixa* {
+		reverse_proxy mailpit:8025
+	}
+	handle {
+		request_body {
+			max_size 15MB
+		}
+		reverse_proxy app:8000
+	}
+}

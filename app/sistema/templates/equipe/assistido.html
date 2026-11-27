@@ -1,0 +1,54 @@
+{% extends "equipe/base_equipe.html" %}{% from "_campos.html" import campo, resumo_erros %}
+{% block titulo %}Atendimento assistido{% endblock %}
+{% block equipe %}
+<h1>Atendimento assistido</h1>
+<p>Registre o pedido em nome da pessoa atendida. Valem os mesmos documentos e validações do canal digital; a trilha registra que foi você.</p>
+<nav aria-label="Tipo de pedido"><ul class="acoes-lista">{% for v, r in tipos.items() %}
+  <li>{% if v == tipo %}<strong>{{ r }}</strong>{% else %}<a href="{{ url_for('assistido.novo', tipo=v) }}">{{ r }}</a>{% endif %}</li>{% endfor %}</ul></nav>
+{% if tipo %}
+{{ resumo_erros(erros) }}
+<form method="post" enctype="multipart/form-data" novalidate>
+  <input type="hidden" name="tipo" value="{{ tipo }}">
+  <fieldset><legend>Unidade</legend>
+    <div class="campo{{ ' com-erro' if 'condominio_id' in erros }}">
+      <label for="condominio_id">Condomínio</label>
+      <select id="condominio_id" name="condominio_id" data-busca><option value="">Escolha</option>
+        {% for c in condominios %}<option value="{{ c.id }}" {{ 'selected' if dados.get('condominio_id') == c.id|string }}>{{ c.nome }}</option>{% endfor %}</select>
+      {% if 'condominio_id' in erros %}<p class="erro">{{ erros.condominio_id }}</p>{% endif %}
+    </div>
+    <div class="lado-a-lado">{{ campo("numero", "Número", erros, dados) }}{{ campo("bloco", "Bloco ou torre", erros, dados) }}</div>
+  </fieldset>
+  <fieldset><legend>{{ 'Pessoa atendida (adquirente)' if tipo == 'titularidade' else 'Proprietário atendido' }}</legend>
+    {% if tipo == 'titularidade' %}{{ campo("nome", "Nome completo", erros, dados) }}{% endif %}
+    {{ campo("cpf_cnpj", "CPF ou CNPJ", erros, dados) }}
+    {% if tipo == 'titularidade' %}{{ campo("email", "E-mail (recebe os avisos do pedido)", erros, dados, tipo="email") }}
+    {% else %}<p class="ajuda">O sistema confere no ERP se a pessoa é proprietária da unidade e usa o e-mail do cadastro.</p>{% endif %}
+  </fieldset>
+  {% if tipo == 'titularidade' %}
+  <fieldset id="tipo_comprovante" {% if 'tipo_comprovante' in erros %}aria-describedby="tipo_comprovante-erro"{% endif %}><legend>Documentos</legend>
+    <div class="campo{{ ' com-erro' if 'identidade' in erros }}"><label for="identidade">Identidade</label>
+      <input id="identidade" name="identidade" type="file" accept="application/pdf,image/jpeg,image/png">{% if 'identidade' in erros %}<p class="erro">{{ erros.identidade }}</p>{% endif %}</div>
+    <p>Comprovante:</p>
+    <label class="opcao"><input type="radio" name="tipo_comprovante" value="matricula" {{ 'checked' if dados.get('tipo_comprovante') == 'matricula' }}> Certidão de matrícula (até 30 dias)</label>
+    <label class="opcao"><input type="radio" name="tipo_comprovante" value="contrato" {{ 'checked' if dados.get('tipo_comprovante') == 'contrato' }}> Contrato com firma reconhecida ou assinatura digital</label>
+    {% if 'tipo_comprovante' in erros %}<p class="erro" id="tipo_comprovante-erro">{{ erros.tipo_comprovante }}</p>{% endif %}
+    {% for c, r in [('matricula', 'Certidão de matrícula'), ('contrato', 'Contrato de compra e venda')] %}
+    <div class="campo{{ ' com-erro' if c in erros }}"><label for="{{ c }}">{{ r }}</label>
+      <input id="{{ c }}" name="{{ c }}" type="file" accept="application/pdf,image/jpeg,image/png">{% if c in erros %}<p class="erro">{{ erros[c] }}</p>{% endif %}</div>
+    {% endfor %}
+    {{ campo("data_chaves", "Data da entrega das chaves (com contrato)", erros, dados, tipo="date") }}
+  </fieldset>
+  {% elif tipo == 'inclusao_locatario' %}
+  <fieldset><legend>Locatário</legend>
+    {{ campo("loc_nome", "Nome completo", erros, dados) }}{{ campo("loc_cpf_cnpj", "CPF ou CNPJ", erros, dados) }}
+    {{ campo("loc_email", "E-mail", erros, dados, tipo="email") }}{{ campo("loc_telefone", "Telefone (opcional)", erros, dados, tipo="tel") }}
+    <div class="campo{{ ' com-erro' if 'contrato' in erros }}"><label for="contrato">Contrato de locação</label>
+      <input id="contrato" name="contrato" type="file" accept="application/pdf,image/jpeg,image/png">{% if 'contrato' in erros %}<p class="erro">{{ erros.contrato }}</p>{% endif %}</div>
+  </fieldset>
+  {% else %}
+  <fieldset><legend>Locatário que sai</legend>{{ campo("loc_cpf_cnpj", "CPF ou CNPJ do locatário", erros, dados) }}</fieldset>
+  {% endif %}
+  <button>Registrar o pedido</button>
+</form>
+{% endif %}
+{% endblock %}

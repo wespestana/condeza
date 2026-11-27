@@ -1,0 +1,18 @@
+{% extends "base.html" %}{% from "_campos.html" import campo, resumo_erros %}
+{% block titulo %}Meus dados{% endblock %}{% block classe_main %}site{% endblock %}
+{% block conteudo %}
+{% include "proprietario/_barra.html" %}
+<h1>Meus dados de contato</h1>
+<p class="intro">Estes dados ficam na sua conta do condômino. Quando você muda algo, a equipe do Cadastro e Emissão confere antes de levar ao cadastro da administradora, para que avisos e boletos não sejam desviados.</p>
+{% if alteradas %}<p class="sucesso" role="status">Alteração registrada ({{ alteradas|map('replace', 'endereco_correspondencia', 'endereço')|join(', ') }}). Se não for aceita, você recebe um e-mail com o motivo.</p>
+{% elif alteradas is not none %}<p class="aviso">Nada mudou.</p>{% endif %}
+{{ resumo_erros(erros) }}
+<form method="post" class="cartao-form" novalidate>
+  <p><strong>{{ eu.nome }}</strong> · {{ eu.cpf_cnpj }}</p>
+  {{ campo("email", "E-mail", erros, eu, tipo="email", attrs='autocomplete="email"') }}
+  {{ campo("telefone", "Telefone", erros, eu, tipo="tel", attrs='autocomplete="tel"') }}
+  {{ campo("endereco_correspondencia", "Endereço de correspondência", erros, eu) }}
+  <button>Salvar</button>
+</form>
+{% endblock %}
+{% block secao_suporte %}contatos{% endblock %}

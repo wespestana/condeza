@@ -1,0 +1,125 @@
+{% extends "equipe/base_equipe.html" %}{% block titulo %}Pedido {{ p.numero }}{% endblock %}
+{% block equipe %}
+<h1>Pedido {{ p.numero }}</h1>
+<p><strong>{{ p.tipo|rotulo|capitalize }}</strong> · situação <strong>{{ p.situacao|rotulo }}</strong> · recebido em {{ p.recebido_em.strftime('%d/%m/%Y às %H:%M:%S') }}
+ · canal {{ p.canal }}</p>
+{% if p.contestado %}<p class="alerta" role="alert"><strong>Contestado</strong> por proprietário atual. A conclusão exige análise registrada{% if analisou_contestacao %} (análise registrada){% endif %}.</p>{% endif %}
+{% if avisos_falhos %}<p class="alerta" role="alert"><strong>Aviso aos proprietários não enviado</strong>: {% for a in avisos_falhos %}{{ a.proprietario or "proprietários da unidade" }}, {{ a.motivo }}{{ "; " if not loop.last else "." }}{% endfor %}</p>{% endif %}
+{% if not p.unidade_id %}<p class="alerta">A unidade informada ({{ p.dados_informados.get('numero') }} {{ p.dados_informados.get('bloco') }}) <strong>não foi localizada no ERP</strong>.</p>{% endif %}
+
+<div class="duas-colunas">
+  <section aria-labelledby="t-solicitante" class="cartao">
+    <h2 id="t-solicitante">Solicitante e unidade</h2>
+    <dl>
+      <dt>Solicitante</dt><dd>{{ p.solicitante_nome }} · <span class="nao-quebra">{{ p.solicitante_cpf_cnpj }}</span> · {{ p.solicitante_email }}</dd>
+      <dt>Condomínio</dt><dd>{{ condominio }}</dd>
+      <dt>Unidade no ERP</dt><dd>{% if unidade %}{{ unidade.tipo }} {{ unidade.numero }}{{ ', Bloco ' ~ unidade.bloco if unidade.bloco }}{% else %}—{% endif %}</dd>
+      <dt>Responsáveis no ERP</dt><dd>{% for r in (unidade or {}).get('responsaveis', []) %}{{ r.nome }} ({{ r.papel|rotulo }}{{ ', pagador' if r.pagador }})<br>{% else %}—{% endfor %}</dd>
+      {% set conc = (p.dados_informados or {}).get('conciliacao') %}
+      {% if conc %}<dt>Alteração de contato</dt>
+        <dd>Feita no aplicativo pelo {{ conc.papel|rotulo }} em {{ conc.alterado_em[8:10] }}/{{ conc.alterado_em[5:7] }} às {{ conc.alterado_em[11:16] }}.<br><br>{% for i in conc.itens %}{{ '<br><br>'|safe if not loop.first }}{{ {'email': 'E-mail', 'telefone': 'Telefone', 'endereco_correspondencia': 'Endereço de correspondência'}[i.campo] }}:
+          <br>no ERP: <strong>{{ i.valor_erp or '(vazio)' }}</strong>
+          <br>novo, no aplicativo: <strong>{{ i.valor_novo }}</strong>{% endfor %}</dd>{% endif %}
+      {% set loc = (p.dados_informados or {}).get('locatario') %}
+      {% if loc %}<dt>Locatário {{ 'a incluir' if p.tipo.value == 'inclusao_locatario' else 'que sai' }}</dt><dd>{{ loc.nome }} · {{ loc.cpf_cnpj }} · {{ loc.email or '' }} {{ loc.telefone or '' }}</dd>{% endif %}
+      {% if p.tipo.value == 'titularidade' %}<dt>Comprovante</dt><dd>{{ p.tipo_comprovante|rotulo if p.tipo_comprovante else '—' }}{% if p.data_chaves %} · chaves em {{ p.data_chaves.strftime('%d/%m/%Y') }}{% endif %}</dd>{% endif %}
+      <dt>Prazos</dt><dd>pendências até {{ prazos.pendencias.strftime('%d/%m') }} · conclusão até {{ prazos.conclusao.strftime('%d/%m') }}{% if p.situacao == Situacao.COM_PENDENCIA %} (pausado){% endif %}</dd>
+    </dl>
+  </section>
+  <section aria-labelledby="t-docs" class="cartao">
+    <h2 id="t-docs">Documentos</h2>
+    <ul>{% for d in docs %}<li><a href="{{ url_for('equipe.documento', doc_id=d.id) }}" target="_blank" rel="noopener">{{ d.tipo|rotulo }}</a> · {{ d.mime.split('/')[1] }} · {{ (d.tamanho / 1024)|round|int }} KB</li>{% endfor %}</ul>
+    {% if p.tipo.value in ('conciliacao', 'saida_locatario') %}
+    <p>{{ 'O dado veio do aplicativo do condomínio' if p.tipo.value == 'conciliacao' else 'A saída de locatário não exige documento' }}: não há leitura da IA.</p>
+    {% else %}
+    <h3>Análise da IA local</h3>
+    {% if analise %}
+      <p>{{ {'fila':'Na fila','processando':'Em análise','concluida':'Concluída','falhou':'Não foi possível ler o documento','tempo_esgotado':'Tempo-limite atingido','ia_desligada':'IA desligada','dispensada':'Dispensada: o pedido já tinha sido decidido'}[analise.status] }}
+      {% if analise.segundos %} em {{ analise.segundos|round|int }} s{% endif %}{% if analise.status in ('falhou','tempo_esgotado','ia_desligada') %} · conferência manual, critério por critério{% endif %}</p>
+      <p class="indice">Índice de conformidade: <strong>{{ (p.indice ~ '%') if p.indice is not none else '—' }}</strong>{% if campos %} · {{ campos|selectattr('atendido')|list|length }} de {{ campos|length }} critérios atendidos{% endif %}</p>
+    {% else %}<p>Sem análise (IA desligada ou sem comprovante): conferência manual.</p>{% endif %}
+    {% if p.situacao in (Situacao.A_CONFERIR, Situacao.COM_PENDENCIA) and not p.aprovado_em and session.usuario.perfil == 'conferente' %}
+    {% if analise and analise.status in ('fila', 'processando') %}<p class="aviso">A IA está lendo o documento. Atualize a página em cerca de 1 minuto.</p>
+    {% else %}<form method="post" action="{{ url_for('equipe.reanalisar', pedido_id=p.id) }}"><button class="secundario">Analisar de novo</button></form>{% endif %}
+    {% endif %}
+    {% endif %}
+  </section>
+</div>
+
+{% macro quadro_escalonamento() %}
+<section aria-labelledby="t-escal" class="cartao">
+  <h2 id="t-escal">Escalonamento ao gerente da carteira</h2>
+  <ol>{% for e in escalonamentos %}<li>{{ e.criado_em.strftime('%d/%m %H:%M') }} ·
+    {% if e.tipo == 'pedido_escalado' %}<strong>dúvida</strong> de {{ e.autor }}: <q>{{ e.detalhe.duvida }}</q>
+    {% else %}<strong>decisão</strong> de {{ e.autor }}: <q>{{ e.detalhe.decisao }}</q>{{ ' (jurídico consultado)' if e.detalhe.consultou_juridico else ' (sem consulta ao jurídico)' }}{% endif %}</li>{% endfor %}</ol>
+  {% if p.escalado %}<p class="alerta">Aguardando a decisão do gerente. O prazo de conclusão continua correndo.</p>{% endif %}
+  {% if p.escalado and session.usuario.perfil == 'gerente' %}
+  <form method="post" action="{{ url_for('equipe.decidir', pedido_id=p.id) }}">
+    <label for="decisao">Decisão</label>
+    <textarea id="decisao" name="decisao" rows="3" required></textarea>
+    <label class="opcao"><input type="checkbox" name="juridico" value="1"> Consultei o jurídico</label>
+    <button>Registrar a decisão</button>
+  </form>
+  {% endif %}
+</section>
+{% endmacro %}
+{% set escal_no_topo = (escalonamentos or p.escalado) and p.situacao in (Situacao.A_CONFERIR, Situacao.COM_PENDENCIA) %}
+{% if escal_no_topo %}{{ quadro_escalonamento() }}{% endif %}
+
+<section id="campos" aria-labelledby="t-campos" class="cartao">
+  <h2 id="t-campos">Conferência</h2>
+  {% if p.situacao in (Situacao.A_CONFERIR, Situacao.COM_PENDENCIA) and not p.aprovado_em and session.usuario.perfil == 'conferente' %}
+  <p><a class="botao" href="{{ url_for('equipe.conferencia', pedido_id=p.id, etapa=1) }}">Conferir e decidir</a></p>
+  {% endif %}
+  {% if campos %}
+  <table class="campos">
+    <thead><tr><th scope="col">Critério</th><th scope="col">IA</th><th scope="col">Conferente</th><th scope="col">Observação</th></tr></thead>
+    <tbody>{% for c in campos %}<tr>
+      <th scope="row">{{ rotulos.get(c.nome, c.nome) }}</th>
+      <td>{% if c.atendido is none %}<span class="pendente">sem leitura da IA</span>{% elif c.atendido %}<span class="ok">atende</span>{% else %}<span class="falha">divergente</span>{% endif %}</td>
+      <td>{% if c.conferencia == 'confere' %}<span class="ok">confere</span>{% elif c.conferencia == 'nao_confere' %}<span class="falha">não confere</span>{% else %}a conferir{% endif %}
+          {% if c.conferido_por %}<br><small>{{ conferentes.get(c.conferido_por) }} · {{ c.conferido_em.strftime('%d/%m %H:%M') }}</small>{% endif %}</td>
+      <td>{{ c.observacao or '' }}</td></tr>{% endfor %}</tbody>
+  </table>
+  {% else %}<p>Sem critérios extraídos: a conferência dos documentos é manual.</p>{% endif %}
+</section>
+
+{% macro lista_resp(lista) %}<ul class="responsaveis">{% for r in lista %}<li>{{ r.nome }} · {{ r.cpf_cnpj }} · <strong>{{ r.papel|rotulo }}</strong>{{ ', pagador' if r.pagador }}{% if r.desde %} · desde {{ r.desde[8:10] }}/{{ r.desde[5:7] }}/{{ r.desde[:4] }}{% endif %}</li>{% endfor %}</ul>{% endmacro %}
+{% if p.aprovado_em %}
+<section aria-labelledby="t-gravacao" class="cartao">
+  <h2 id="t-gravacao">Aprovação e gravação</h2>
+  <p>Aprovado por <strong>{{ aprovador }}</strong> em {{ p.aprovado_em.strftime('%d/%m/%Y às %H:%M') }}.</p>
+  <ul>
+    <li>ERP: {{ ('gravado em ' ~ p.gravado_erp_em.strftime('%d/%m %H:%M')) if p.gravado_erp_em else 'pendente' }}</li>
+    <li>Aplicativo: {% if p.tipo.value == 'conciliacao' %}não se aplica (o dado veio do aplicativo){% else %}{{ ('gravado em ' ~ p.gravado_app_em.strftime('%d/%m %H:%M')) if p.gravado_app_em else 'pendente' }}{% endif %}</li>
+  </ul>
+  {% if p.erro_gravacao %}<p class="alerta">Última falha: {{ p.erro_gravacao }}. O pedido não é concluído até as duas gravações.</p>{% endif %}
+  {% if p.situacao == Situacao.A_CONFERIR %}<form method="post" action="{{ url_for('equipe.reprocessar_gravacao', pedido_id=p.id) }}"><button>Reprocessar gravação</button></form>{% endif %}
+  <h3>Responsáveis depois da conclusão</h3>
+  {% if p.responsaveis_novos %}{{ lista_resp(p.responsaveis_novos) }}{% else %}<p>Serão calculados quando o ERP responder.</p>{% endif %}
+</section>
+{% endif %}
+{% if (escalonamentos or p.escalado) and not escal_no_topo %}{{ quadro_escalonamento() }}{% endif %}
+{% if p.motivo_recusa %}<p><strong>Motivo da recusa:</strong> {{ p.motivo_recusa }}</p>{% endif %}
+{% if p.situacao == Situacao.RECUSADO and docs and session.usuario.perfil == 'conferente' %}
+<form method="post" action="{{ url_for('equipe.encerrar_tratativas', pedido_id=p.id) }}" class="cartao">
+  <h3>Encerrar tratativas</h3>
+  <p>Quando não houver mais nada a tratar com o solicitante, apague os documentos deste pedido recusado. A trilha continua registrando o que foi enviado.</p>
+  <button class="secundario">Tratativas encerradas: apagar documentos</button>
+</form>
+{% endif %}
+
+<section aria-labelledby="t-pend" class="cartao">
+  <h2 id="t-pend">Pendências</h2>
+  <ul>{% for x in pendencias %}<li>{{ x.descricao }} · {{ 'depende do solicitante' if x.depende_solicitante else 'interna' }} · {{ x.criada_em.strftime('%d/%m %H:%M') }}{% if x.respondida_em %} · respondida em {{ x.respondida_em.strftime('%d/%m %H:%M') }}{% if x.resposta %}: <q>{{ x.resposta }}</q>{% endif %}{% endif %}</li>{% else %}<li>Nenhuma.</li>{% endfor %}</ul>
+</section>
+
+<section aria-labelledby="t-trilha" class="cartao">
+  <h2 id="t-trilha">Trilha de auditoria</h2>
+  <table class="trilha">
+    <caption class="visualmente-oculto">Eventos do pedido, do mais antigo ao mais recente</caption>
+    <thead><tr><th scope="col">Data e hora</th><th scope="col">Evento</th><th scope="col">Autor</th><th scope="col">Detalhes</th></tr></thead>
+    <tbody>{% for e in eventos %}<tr><td class="nao-quebra"><time>{{ e.criado_em.strftime('%d/%m/%Y %H:%M:%S') }}</time></td><td><strong>{{ e.tipo|evento }}</strong></td><td>{{ e.autor }}</td><td class="detalhe">{{ e.detalhe|detalhe if e.detalhe else '—' }}</td></tr>{% endfor %}</tbody>
+  </table>
+</section>
+{% endblock %}

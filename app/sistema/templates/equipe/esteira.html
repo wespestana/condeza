@@ -1,0 +1,59 @@
+{% extends "equipe/base_equipe.html" %}{% block titulo %}Esteira de conferência{% endblock %}
+{% block equipe %}
+<h1>Esteira de conferência</h1>
+{% if sem_gravar %}
+<section class="alerta" aria-labelledby="t-degradado">
+  <h2 id="t-degradado">Aprovados aguardando gravação (modo degradado)</h2>
+  <p>Estes pedidos foram aprovados, mas o ERP ou o aplicativo não confirmou a gravação. O sistema tenta de novo a cada 5 minutos.</p>
+  <ul>{% for p in sem_gravar %}<li><a href="{{ url_for('equipe.detalhe', pedido_id=p.id) }}">{{ p.numero }}</a> · {{ p.erro_gravacao or 'gravação em andamento' }}</li>{% endfor %}</ul>
+</section>
+{% endif %}
+{% if avisos %}
+<section class="sugestao" aria-labelledby="t-reemissao">
+  <h2 id="t-reemissao">Reemitir boleto</h2>
+  <p class="ajuda">Pedidos concluídos depois da emissão do boleto do mês. O sistema não emite boletos: reemita no ERP e marque como feito.</p>
+  <ul>{% for a in avisos %}<li><a href="{{ url_for('equipe.detalhe', pedido_id=a.pedido_id) }}">{{ numeros.get(a.pedido_id) }}</a> · {{ a.descricao }}
+    {% if not a.emissao_verificada %}<strong>(o ERP não respondeu: confira se o boleto já saiu)</strong>{% endif %}
+    <form method="post" action="{{ url_for('equipe.resolver_aviso', aviso_id=a.id) }}" class="em-linha"><button class="secundario">Boleto reemitido</button></form></li>{% endfor %}</ul>
+</section>
+{% endif %}
+<form method="get" class="filtro" aria-label="Filtrar a esteira">
+  <div><label for="situacao">Situação</label>
+  <select id="situacao" name="situacao">
+    {% for v, r in [('abertos','Em aberto'),('a_conferir','A conferir'),('com_pendencia','Com pendência'),('concluido','Concluídos'),('recusado','Recusados'),('todos','Todas')] %}
+    <option value="{{ v }}" {{ 'selected' if filtro == v }}>{{ r }}</option>{% endfor %}
+  </select></div>
+  <div><label for="marcacao">Marcação</label>
+  <select id="marcacao" name="marcacao">
+    {% for v, r in [('','Todas'),('contestado','Contestado'),('escalado','Escalado'),('aguardando_matricula','Aguardando matrícula')] %}
+    <option value="{{ v }}" {{ 'selected' if marcacao == v }}>{{ r }}</option>{% endfor %}
+  </select></div>
+  <div><label for="tipo">Tipo</label>
+  <select id="tipo" name="tipo">
+    {% for v, r in [('','Todos'),('titularidade','Mudança de titularidade'),('inclusao_locatario','Inclusão de locatário'),('saida_locatario','Saída de locatário'),('conciliacao','Conciliação de contato')] %}
+    <option value="{{ v }}" {{ 'selected' if tipo == v }}>{{ r }}</option>{% endfor %}
+  </select></div>
+  <button class="secundario">Filtrar</button>
+</form>
+<table>
+  <caption class="visualmente-oculto">Pedidos da esteira</caption>
+  <thead><tr><th scope="col">Pedido</th><th scope="col">Tipo</th><th scope="col">Condomínio e unidade</th><th scope="col">Solicitante</th><th scope="col">Situação</th><th scope="col">Índice</th><th scope="col">Prazo de conclusão</th></tr></thead>
+  <tbody>
+  {% for l in linhas %}{% set p = l.p %}
+    <tr class="{{ 'linha-' ~ l.alerta if l.alerta }}">
+      <td class="nao-quebra"><a href="{{ url_for('equipe.detalhe', pedido_id=p.id) }}">{{ p.numero }}</a><br><small>{{ p.recebido_em.strftime('%d/%m %H:%M') }}</small></td>
+      <td>{{ p.tipo|rotulo|capitalize }}</td>
+      <td>{{ l.condominio }}<br><small>{% if p.unidade_id %}unidade {{ p.dados_informados.get('numero') }} {{ p.dados_informados.get('bloco') }}{% else %}<strong class="falha">unidade não localizada</strong>{% endif %}</small></td>
+      <td>{{ p.solicitante_nome }}</td>
+      <td>{{ p.situacao|rotulo }}
+        {% if p.contestado %}<span class="marca marca-contestado">contestado</span>{% endif %}
+        {% if p.escalado %}<span class="marca">escalado</span>{% endif %}
+        {% if p.aguardando_matricula %}<span class="marca">aguardando matrícula</span>{% endif %}
+        {% if p.canal != 'digital' %}<span class="marca">{{ p.canal }}</span>{% endif %}</td>
+      <td>{{ (p.indice ~ '%') if p.indice is not none else '—' }}</td>
+      <td>{{ l.prazo.strftime('%d/%m') if l.prazo else '—' }}{% if l.alerta == 'vencido' %} <strong class="falha">vencido</strong>{% elif l.alerta == 'hoje' %} <strong>vence hoje</strong>{% endif %}</td>
+    </tr>
+  {% else %}<tr><td colspan="7">Nenhum pedido.</td></tr>{% endfor %}
+  </tbody>
+</table>
+{% endblock %}

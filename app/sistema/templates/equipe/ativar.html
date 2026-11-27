@@ -1,0 +1,42 @@
+{% extends "base.html" %}{% block titulo %}Ativar conta · Equipe{% endblock %}
+{% block conteudo %}
+{% if invalido %}
+<h1>Link de ativação inválido</h1>
+<p>Este link já foi usado, venceu ou foi substituído por um mais novo. Peça à Tecnologia, por chamado, um novo link de ativação.</p>
+{% elif concluido %}
+<h1>Conta ativada</h1>
+<p class="sucesso" role="status">A conta <strong>{{ conta }}</strong> está pronta. Entre com o e-mail, a senha que você definiu e o código do autenticador.</p>
+<p><a href="{{ url_for('equipe.entrar') }}">Ir para a entrada da equipe</a></p>
+{% else %}
+<h1>Ativar sua conta</h1>
+<p>Olá, {{ nome }}. Conta <strong>{{ conta }}</strong>. Só você conhece a senha e o autenticador desta conta: ninguém da Condeza vai pedi-los.</p>
+{% if erros %}<div class="alerta" role="alert"><strong>Corrija para continuar:</strong><ul>{% for e in erros %}<li>{{ e }}</li>{% endfor %}</ul></div>{% endif %}
+<form method="post">
+  <section class="cartao" aria-labelledby="t-autenticador">
+    <h2 id="t-autenticador">1. Cadastre o autenticador</h2>
+    <p>No aplicativo autenticador do celular, escolha adicionar conta por chave e digite:</p>
+    <p class="chave" id="chave"><strong>{% for g in chave.split() %}<span>{{ g }}</span>{% endfor %}</strong></p>
+    <p><button type="button" class="secundario" data-copiar="{{ chave|replace(' ', '') }}" hidden>Copiar chave</button>
+      <span class="ajuda" role="status" data-copiado></span></p>
+    <p class="ajuda">Conta: {{ conta }} · emissor: Condeza · baseado em tempo. <a href="{{ uri }}">Abrir no autenticador deste aparelho</a></p>
+    <div class="campo"><label for="codigo">Código de 6 dígitos que o autenticador mostra agora</label>
+      <input id="codigo" name="codigo" inputmode="numeric" autocomplete="one-time-code" maxlength="6" required></div>
+  </section>
+  <section class="cartao" aria-labelledby="t-senha">
+    <h2 id="t-senha">2. Defina sua senha</h2>
+    <div class="campo"><label for="senha">Senha</label><input id="senha" name="senha" type="password" autocomplete="new-password" minlength="{{ minimo }}" required aria-describedby="senha-ajuda">
+      <p class="ajuda" id="senha-ajuda">Pelo menos {{ minimo }} caracteres. Use uma senha só sua, que não use em outro lugar.</p></div>
+    <div class="campo"><label for="confirmacao">Repita a senha</label><input id="confirmacao" name="confirmacao" type="password" autocomplete="new-password" required></div>
+  </section>
+  <button>Ativar conta</button>
+</form>
+{% endif %}
+{% endblock %}
+{% block barra_util %}{% endblock %}
+{% block menu %}<span class="area-equipe">Área da equipe</span>{% endblock %}
+{% block rodape %}
+<footer class="rodape rodape-equipe"><div class="rodape-dentro">
+  <div><span class="nome">Condeza</span><p>Área interna do Cadastro e Emissão e da Gerência de Condomínios.</p></div>
+  <p class="aviso">Acesso restrito à equipe, com registro de cada ação na trilha de auditoria. Empresa, pessoas e dados fictícios, para trabalho acadêmico.</p>
+</div></footer>
+{% endblock %}

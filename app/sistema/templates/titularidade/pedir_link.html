@@ -1,0 +1,26 @@
+{% extends "base.html" %}{% from "_campos.html" import campo, resumo_erros %}
+{% block titulo %}Pedir a mudança de titularidade{% endblock %}
+{% block conteudo %}
+<h1>Pedir a mudança de titularidade</h1>
+<p>Comprou uma unidade? Informe os dados abaixo e enviaremos um link para o seu e-mail. Não é preciso cadastro.</p>
+{{ resumo_erros(erros) }}
+<form method="post" novalidate>
+  <div class="campo{{ ' com-erro' if 'condominio_id' in erros }}">
+    <label for="condominio_id">Condomínio</label>
+    <select id="condominio_id" name="condominio_id" data-busca {% if 'condominio_id' in erros %}aria-invalid="true" aria-describedby="condominio_id-erro"{% endif %}>
+      <option value="">Escolha</option>
+      {% for c in condominios %}<option value="{{ c.id }}" {{ 'selected' if dados.get('condominio_id') == c.id|string }}>{{ c.nome }}</option>{% endfor %}
+    </select>
+    {% if 'condominio_id' in erros %}<p class="erro" id="condominio_id-erro">{{ erros.condominio_id }}</p>{% endif %}
+  </div>
+  <div class="lado-a-lado">
+    {{ campo("numero", "Número da unidade", erros, dados, attrs='inputmode="numeric" autocomplete="off"') }}
+    {{ campo("bloco", "Bloco ou torre (se houver)", erros, dados) }}
+  </div>
+  {{ campo("nome", "Nome completo ou razão social", erros, dados, attrs='autocomplete="name"') }}
+  {{ campo("cpf_cnpj", "CPF ou CNPJ", erros, dados, attrs='inputmode="numeric"') }}
+  {{ campo("email", "E-mail", erros, dados, tipo="email", ajuda="O link chega neste endereço e vale por 2 horas.", attrs='autocomplete="email"') }}
+  <button>Receber o link</button>
+</form>
+{% endblock %}
+{% block secao_suporte %}titularidade{% endblock %}

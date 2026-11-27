@@ -1,0 +1,193 @@
+{
+  "_aviso": "Dados fictícios (RNF03). Cópia do cadastro do aplicativo, que não conversa com o ERP.",
+  "condominos": [
+    {
+      "nome": "Ana Lúcia Ferreira",
+      "cpf_cnpj": "104.332.181-00",
+      "email": "ana.ferreira@exemplo.test",
+      "telefone": "(11) 90000-0101",
+      "identidade_validada": true
+    },
+    {
+      "nome": "Otávio Brandão Lessa",
+      "cpf_cnpj": "158.813.998-03",
+      "email": "otavio.lessa@exemplo.test",
+      "telefone": "(11) 90000-0102",
+      "identidade_validada": true
+    },
+    {
+      "nome": "Helena Duarte Campos",
+      "cpf_cnpj": "698.797.309-17",
+      "email": "helena.campos@exemplo.test",
+      "telefone": "(11) 90000-0103",
+      "identidade_validada": true
+    },
+    {
+      "nome": "Igor Matias Prado",
+      "cpf_cnpj": "114.170.753-50",
+      "email": "igor.prado@exemplo.test",
+      "telefone": "(11) 90000-0104",
+      "identidade_validada": true
+    },
+    {
+      "nome": "Paulo Roberto Siqueira",
+      "cpf_cnpj": "083.863.794-99",
+      "email": "paulo.siqueira@exemplo.test",
+      "telefone": "(11) 90000-0201",
+      "identidade_validada": true
+    },
+    {
+      "nome": "Márcia Aparecida Siqueira",
+      "cpf_cnpj": "026.542.351-14",
+      "email": "marcia.siqueira@exemplo.test",
+      "telefone": "(11) 90000-0202",
+      "identidade_validada": true
+    },
+    {
+      "nome": "Vera Lúcia Antunes",
+      "cpf_cnpj": "645.568.151-77",
+      "email": "vera.antunes@exemplo.test",
+      "telefone": "(11) 90000-0203",
+      "identidade_validada": true
+    },
+    {
+      "nome": "Sérgio Antunes Bragança",
+      "cpf_cnpj": "557.616.987-57",
+      "email": "sergio.braganca@exemplo.test",
+      "telefone": "(11) 90000-0301",
+      "identidade_validada": true
+    },
+    {
+      "nome": "Nádia Ferraz Quintela",
+      "cpf_cnpj": "884.472.940-72",
+      "email": "nadia.quintela@exemplo.test",
+      "telefone": "(11) 90000-0402",
+      "identidade_validada": true
+    },
+    {
+      "nome": "Lívia Duarte Campos",
+      "cpf_cnpj": "731.205.480-30",
+      "email": "livia.campos@exemplo.test",
+      "telefone": "(11) 90000-0105",
+      "identidade_validada": true,
+      "morador": true
+    }
+  ],
+  "unidades": [
+    {
+      "id": 101,
+      "responsaveis": [
+        {
+          "cpf_cnpj": "104.332.181-00",
+          "papel": "proprietario"
+        }
+      ]
+    },
+    {
+      "id": 102,
+      "responsaveis": [
+        {
+          "cpf_cnpj": "158.813.998-03",
+          "papel": "proprietario"
+        }
+      ]
+    },
+    {
+      "id": 103,
+      "responsaveis": [
+        {
+          "cpf_cnpj": "698.797.309-17",
+          "papel": "proprietario"
+        },
+        {
+          "cpf_cnpj": "114.170.753-50",
+          "papel": "locatario"
+        }
+      ]
+    },
+    {
+      "id": 201,
+      "responsaveis": [
+        {
+          "cpf_cnpj": "083.863.794-99",
+          "papel": "proprietario"
+        },
+        {
+          "cpf_cnpj": "026.542.351-14",
+          "papel": "proprietario"
+        }
+      ]
+    },
+    {
+      "id": 202,
+      "responsaveis": [
+        {
+          "cpf_cnpj": "645.568.151-77",
+          "papel": "proprietario"
+        }
+      ]
+    },
+    {
+      "id": 301,
+      "responsaveis": [
+        {
+          "cpf_cnpj": "557.616.987-57",
+          "papel": "proprietario"
+        }
+      ]
+    },
+    {
+      "id": 401,
+      "responsaveis": [
+        {
+          "cpf_cnpj": "52.601.815/0001-20",
+          "papel": "proprietario"
+        }
+      ]
+    },
+    {
+      "id": 402,
+      "responsaveis": [
+        {
+          "cpf_cnpj": "884.472.940-72",
+          "papel": "proprietario"
+        }
+      ]
+    }
+  ],
+  "alteracoes_contato": [
+    {
+      "id": 1,
+      "cpf_cnpj": "698.797.309-17",
+      "campo": "email",
+      "valor_anterior": "helena.campos@exemplo.test",
+      "valor_novo": "helena.duarte@exemplo.test",
+      "alterado_em": "2026-11-18T09:12:00"
+    },
+    {
+      "id": 2,
+      "cpf_cnpj": "114.170.753-50",
+      "campo": "telefone",
+      "valor_anterior": "(11) 90000-0104",
+      "valor_novo": "(11) 98888-0104",
+      "alterado_em": "2026-11-19T17:40:00"
+    },
+    {
+      "id": 3,
+      "cpf_cnpj": "731.205.480-30",
+      "campo": "email",
+      "valor_anterior": "livia.campos@exemplo.test",
+      "valor_novo": "livia.d.campos@exemplo.test",
+      "alterado_em": "2026-11-19T20:05:00"
+    },
+    {
+      "id": 4,
+      "cpf_cnpj": "698.797.309-17",
+      "campo": "data_nascimento",
+      "valor_anterior": "1975-03-02",
+      "valor_novo": "1975-03-12",
+      "alterado_em": "2026-11-20T08:30:00"
+    }
+  ],
+  "tokens": {}
+}

@@ -1,0 +1,6 @@
+<nav class="barra-area" aria-label="Área do condômino">
+  <span>Olá, <strong>{{ session.proprietario.nome.split()[0] }}</strong></span>
+  <a href="{{ url_for('proprietario.area') }}" {{ 'aria-current="page"'|safe if request.endpoint == 'proprietario.area' }}>Minhas unidades</a>
+  <a href="{{ url_for('proprietario.meus_dados') }}" {{ 'aria-current="page"'|safe if request.endpoint == 'proprietario.meus_dados' }}>Meus dados</a>
+  <a href="{{ url_for('proprietario.sair') }}">Sair</a>
+</nav>

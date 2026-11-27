@@ -1,0 +1,144 @@
+{% extends "equipe/base_equipe.html" %}{% from "_ilustracoes.html" import icone %}
+{% block titulo %}Conferência · Pedido {{ p.numero }}{% endblock %}
+{% macro lista_resp(lista) %}<ul class="responsaveis">{% for r in lista %}<li>{{ r.nome }} · {{ r.cpf_cnpj }} · <strong>{{ r.papel|rotulo }}</strong>{{ ', pagador' if r.pagador }}{% if r.desde %} · desde {{ r.desde[8:10] }}/{{ r.desde[5:7] }}/{{ r.desde[:4] }}{% endif %}</li>{% endfor %}</ul>{% endmacro %}
+{% block equipe %}
+<p><a href="{{ url_for('equipe.detalhe', pedido_id=p.id) }}">Pedido {{ p.numero }}</a> · {{ p.tipo|rotulo }} · {{ p.solicitante_nome }}</p>
+<h1>Conferência</h1>
+<ol class="etapas">{% for nome in etapas %}{% set n = loop.index %}
+  <li class="{{ 'atual' if n == etapa else ('feita' if n < etapa else '') }}">
+    <a href="{{ url_for('equipe.conferencia', pedido_id=p.id, etapa=n) }}" {{ 'aria-current="step"'|safe if n == etapa }}><span>{{ n }}</span>{{ nome }}</a></li>{% endfor %}
+</ol>
+{% if p.contestado %}<p class="alerta" role="alert"><strong>Contestado</strong> por proprietário atual: a aprovação exige a análise da contestação{{ ' (já registrada)' if analisou_contestacao else '' }}.</p>{% endif %}
+{% if avisos_falhos %}<p class="alerta" role="alert"><strong>Aviso aos proprietários não enviado</strong>: {% for a in avisos_falhos %}{{ a.proprietario or "proprietários da unidade" }}, {{ a.motivo }}{{ "; " if not loop.last else "." }}{% endfor %}</p>{% endif %}
+{% if p.escalado %}<p class="alerta"><strong>Escalado:</strong> aguardando a decisão do gerente da carteira.</p>{% endif %}
+
+{% if etapa == 1 %}
+<div class="duas-colunas">
+  <section class="cartao" aria-labelledby="e1a"><h2 id="e1a">Quem pede e qual unidade</h2>
+    <dl>
+      <dt>Solicitante</dt><dd>{{ p.solicitante_nome }} · <span class="nao-quebra">{{ p.solicitante_cpf_cnpj }}</span><br>{{ p.solicitante_email }}</dd>
+      <dt>Condomínio</dt><dd>{{ condominio }}</dd>
+      <dt>Unidade no ERP</dt><dd>{% if unidade %}{{ unidade.tipo }} {{ unidade.numero }}{{ ', Bloco ' ~ unidade.bloco if unidade.bloco }}{% else %}<strong class="falha">não localizada</strong>{% endif %}</dd>
+      <dt>Responsáveis hoje</dt><dd>{% for r in (unidade or {}).get('responsaveis', []) %}{{ r.nome }} ({{ r.papel|rotulo }}{{ ', pagador' if r.pagador }})<br>{% else %}—{% endfor %}</dd>
+      {% set loc = (p.dados_informados or {}).get('locatario') %}
+      {% if loc %}<dt>Locatário {{ 'a incluir' if p.tipo.value == 'inclusao_locatario' else 'que sai' }}</dt><dd>{{ loc.nome }} · {{ loc.cpf_cnpj }}</dd>{% endif %}
+      {% set conc = (p.dados_informados or {}).get('conciliacao') %}
+      {% if conc %}<dt>Alteração de contato</dt><dd>{% for i in conc.itens %}{{ '<br>'|safe if not loop.first }}{{ {'email': 'E-mail', 'telefone': 'Telefone', 'endereco_correspondencia': 'Endereço de correspondência'}[i.campo] }}: {{ i.valor_erp or '(vazio)' }} → <strong>{{ i.valor_novo }}</strong>{% endfor %}
+        <br><span class="ajuda">A decisão vale para todos os campos desta alteração.</span></dd>{% endif %}
+      {% if p.tipo.value == 'titularidade' %}<dt>Comprovante</dt><dd>{{ p.tipo_comprovante|rotulo if p.tipo_comprovante else '—' }}{% if p.data_chaves %} · chaves em {{ p.data_chaves.strftime('%d/%m/%Y') }}{% endif %}</dd>{% endif %}
+      <dt>Prazo de conclusão</dt><dd>{{ prazos.conclusao.strftime('%d/%m/%Y') }}{{ ' (pausado)' if p.situacao == Situacao.COM_PENDENCIA }}</dd>
+    </dl></section>
+  <section class="cartao" aria-labelledby="e1b"><h2 id="e1b">Documentos</h2>
+    <ul class="docs">{% for d in docs %}<li>{{ icone('boleto', 24) }}<a href="{{ url_for('equipe.documento', doc_id=d.id) }}" target="_blank" rel="noopener">{{ d.tipo|rotulo }} (abre em nova aba)</a></li>{% else %}<li>Sem documentos: {{ 'a saída de locatário não exige documento' if p.tipo.value == 'saida_locatario' else ('a alteração de contato não tem anexo' if p.tipo.value == 'conciliacao' else 'nada anexado') }}.</li>{% endfor %}</ul>
+    {% if p.tipo.value == 'conciliacao' %}<p>O dado veio do aplicativo do condomínio: não há documento nem leitura da IA.</p>
+    {% elif p.tipo.value != 'saida_locatario' %}
+    <h3>Análise da IA local</h3>
+    {% if analise %}<p>{{ {'fila':'Na fila','processando':'Em análise','concluida':'Concluída','falhou':'Não foi possível ler o documento','tempo_esgotado':'Tempo-limite atingido','ia_desligada':'IA desligada','dispensada':'Dispensada'}[analise.status] }}{% if p.indice is not none %} · índice {{ p.indice }}% ({{ campos|selectattr('atendido')|list|length }} de {{ campos|length }} critérios){% endif %}</p>
+      {% if analise.status in ('falhou', 'tempo_esgotado', 'ia_desligada') %}<p class="aviso">Sem leitura da IA: confira cada critério direto no documento.</p>{% endif %}
+      {% if analise.status in ('fila', 'processando') %}<p class="aviso">A IA ainda está lendo o documento (cerca de 1 minuto). Atualize a página para ver os critérios.</p>{% endif %}
+    {% else %}<p>Sem análise: a conferência dos documentos é manual.</p>{% endif %}
+    <p class="ajuda">A IA só lê e compara; quem decide é você.</p>{% endif %}</section>
+</div>
+<p class="navegacao-etapas"><a class="botao" href="{{ url_for('equipe.conferencia', pedido_id=p.id, etapa=2) }}">Próxima: critério por critério</a></p>
+
+{% elif etapa == 2 %}
+{% if campos %}{% set c = campos[i] %}
+<div class="etapa2">
+  <section class="cartao criterio" aria-labelledby="e2">
+    <p class="sobre">Critério {{ i + 1 }} de {{ campos|length }} · {{ 'vínculo' if natureza.get(c.nome) == 'vinculo' else 'documento' }}</p>
+    <h2 id="e2">{{ rotulos.get(c.nome, c.nome) }}</h2>
+    <dl class="comparacao">
+      {% if c.valor_informado %}<dt>No pedido</dt><dd>{{ c.valor_informado }}</dd>{% endif %}
+      {% if c.valor_cadastro %}<dt>No cadastro (ERP)</dt><dd>{{ c.valor_cadastro }}</dd>{% endif %}
+      <dt>A IA leu no documento</dt><dd>{{ c.valor_extraido or ('— (sem leitura da IA)' if c.atendido is none else '— (não encontrado)') }}</dd>
+      <dt>Trecho do documento</dt><dd>{% if c.evidencia %}<q>{{ c.evidencia }}</q>{% else %}<strong>{{ 'sem leitura da IA' if c.atendido is none else 'não encontrado' }}</strong>: confira no documento{% endif %}</dd>
+      <dt>Indicação da IA</dt><dd>{% if c.atendido is none %}<span class="pendente">sem leitura da IA</span>{% elif c.atendido %}<span class="ok">atende</span>{% else %}<span class="falha">divergente</span>{% endif %}</dd>
+    </dl>
+    {% for d in docs %}<p><a href="{{ url_for('equipe.documento', doc_id=d.id) }}" target="_blank" rel="noopener">Abrir {{ d.tipo|rotulo }} (nova aba)</a></p>{% endfor %}
+    <form method="post" action="{{ url_for('equipe.responder_criterio', pedido_id=p.id, campo_id=c.id) }}">
+      <label for="observacao">Observação (opcional)</label>
+      <textarea id="observacao" name="observacao" rows="2" placeholder="Ex.: o nome do condomínio está abreviado no documento">{{ c.observacao or '' }}</textarea>
+      <div class="acoes"><button name="resposta" value="confere">Confere</button>
+        <button name="resposta" value="nao_confere" class="secundario">Não confere</button></div>
+    </form>
+  </section>
+  <nav class="lista-criterios" aria-label="Critérios">
+    <ol>{% for x in campos %}<li class="{{ 'atual' if loop.index0 == i }}"><a href="{{ url_for('equipe.conferencia', pedido_id=p.id, etapa=2, c=loop.index0) }}" data-campo="{{ x.id }}" data-ia="{{ 'sem_ia' if x.atendido is none else ('atende' if x.atendido else 'divergente') }}">{{ rotulos.get(x.nome, x.nome) }}</a>
+      {% if x.conferencia == 'confere' %}<span class="ok">confere</span>{% elif x.conferencia == 'nao_confere' %}<span class="falha">não confere</span>{% else %}<span class="pendente">a conferir</span>{% endif %}</li>{% endfor %}</ol>
+  </nav>
+</div>
+{% else %}
+<p class="aviso">Este pedido não tem critérios extraídos pela IA{{ ' (saída de locatário, sem documento)' if p.tipo.value == 'saida_locatario' else '' }}. Confira as informações e os documentos da etapa 1.</p>
+<p class="navegacao-etapas"><a class="botao" href="{{ url_for('equipe.conferencia', pedido_id=p.id, etapa=3) }}">Próxima: resumo</a></p>
+{% endif %}
+
+{% elif etapa == 3 %}
+<section aria-labelledby="e3">
+  <h2 id="e3">Resumo da sua conferência</h2>
+  {% if campos %}
+  <table class="campos"><thead><tr><th scope="col">Critério</th><th scope="col">IA</th><th scope="col">Sua resposta</th><th scope="col">Observação</th><th scope="col"></th></tr></thead>
+    <tbody>{% for c in campos %}<tr data-campo="{{ c.id }}" data-ia="{{ 'sem_ia' if c.atendido is none else ('atende' if c.atendido else 'divergente') }}">
+      <th scope="row">{{ rotulos.get(c.nome, c.nome) }}</th>
+      <td>{% if c.atendido is none %}<span class="pendente">sem leitura da IA</span>{% elif c.atendido %}<span class="ok">atende</span>{% else %}<span class="falha">divergente</span>{% endif %}</td>
+      <td>{% if c.conferencia == 'confere' %}<span class="ok">confere</span>{% elif c.conferencia == 'nao_confere' %}<span class="falha">não confere</span>{% else %}<span class="pendente">a conferir</span>{% endif %}</td>
+      <td>{{ c.observacao or '' }}</td>
+      <td><a href="{{ url_for('equipe.conferencia', pedido_id=p.id, etapa=2, c=loop.index0) }}">rever</a></td></tr>{% endfor %}</tbody></table>
+  {% else %}<p>Sem critérios automáticos: a decisão se apoia na conferência manual dos documentos.</p>{% endif %}
+  {% if sugestao %}
+  <div class="sugestao" role="note"><h3>Sugestão a partir das suas respostas</h3>
+    {% if sugestao.tipo == 'incompleta' %}<p>Faltam {{ sugestao.criterios|length }} critério(s) para concluir a conferência.</p>
+    {% elif sugestao.tipo == 'nao_comprova' %}<p>Você marcou como "não confere" critério de vínculo: {% for n in sugestao.criterios %}<strong>{{ rotulos.get(n, n) }}</strong>{{ '; ' if not loop.last else '.' }}{% endfor %} A recusa já vem com o texto: <q>{{ sugestao.texto }}</q></p>
+    {% elif sugestao.tipo == 'pendencia' %}<p>Os critérios de vínculo conferem; falta regularizar documento. A pendência já vem preenchida.</p>
+    {% else %}<p>Todos os critérios conferem: o pedido pode ser aprovado.</p>{% endif %}
+    <p class="ajuda">A sugestão não decide: a escolha é sua, na etapa 4.</p></div>
+  {% endif %}
+</section>
+<p class="navegacao-etapas"><a class="botao" href="{{ url_for('equipe.conferencia', pedido_id=p.id, etapa=4) }}">Próxima: decisão</a></p>
+
+{% else %}
+<section aria-labelledby="t-acoes" class="acoes-pedido">
+  <h2 id="t-acoes">Decisão</h2>
+<form method="post" action="{{ url_for('equipe.pendencia', pedido_id=p.id) }}" class="cartao">
+    <h3>Registrar pendência</h3>
+    <label for="descricao">O que falta ou precisa ser corrigido</label>
+    <textarea id="descricao" name="descricao" rows="3" required>{{ sugestao.texto if sugestao and sugestao.tipo == 'pendencia' }}</textarea>
+    <label class="opcao"><input type="checkbox" name="depende_solicitante" value="1" checked> Depende do solicitante (envia e-mail e pausa o prazo)</label>
+    <button class="secundario">Registrar pendência</button>
+  </form>
+  {% if p.contestado %}
+  <form method="post" action="{{ url_for('equipe.analisar_contestacao', pedido_id=p.id) }}" class="cartao">
+    <h3>Análise da contestação</h3>
+    <label for="analise">Como a contestação foi verificada</label>
+    <textarea id="analise" name="analise" rows="2" required></textarea>
+    <button class="secundario">Registrar análise</button>
+  </form>
+  {% endif %}
+  <form method="post" action="{{ url_for('equipe.recusar', pedido_id=p.id) }}" class="cartao">
+    <h3>Recusar</h3>
+    <label for="motivo">Motivo (vai para o solicitante)</label>
+    <textarea id="motivo" name="motivo" rows="2" required>{{ sugestao.texto if sugestao and sugestao.tipo == 'nao_comprova' }}</textarea>
+    <button class="secundario">Recusar o pedido</button>
+  </form>
+  {% if not p.escalado %}
+  <form method="post" action="{{ url_for('equipe.escalar', pedido_id=p.id) }}" class="cartao">
+    <h3>Escalar ao gerente da carteira</h3>
+    <label for="duvida">Qual é a dúvida difícil de comprovar?</label>
+    <textarea id="duvida" name="duvida" rows="2" required></textarea>
+    <button class="secundario">Escalar</button>
+  </form>
+  {% endif %}
+  <form method="post" action="{{ url_for('equipe.aprovar', pedido_id=p.id) }}" class="cartao">
+    <h3>Aprovar</h3>
+    {% if bloqueios %}
+      <p>Não é possível aprovar agora:</p>
+      <ul>{% for b in bloqueios %}<li>{{ b }}</li>{% endfor %}</ul>
+    {% else %}
+      <p>Ao aprovar, o sistema grava no ERP e no aplicativo. O pedido só fica concluído com as duas gravações confirmadas.</p>
+      {% if previa %}<p>Responsáveis da unidade depois da conclusão:</p>{{ lista_resp(previa) }}{% endif %}
+      {% if p.tipo_comprovante == 'contrato' %}<p class="ajuda">Com contrato, o vendedor continua proprietário e pagador, e o pedido recebe a marcação "aguardando matrícula".</p>{% endif %}
+      <button>Aprovar o pedido</button>
+    {% endif %}
+  </form>
+</section>
+{% endif %}
+{% endblock %}

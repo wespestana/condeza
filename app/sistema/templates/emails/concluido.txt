@@ -1,0 +1,19 @@
+Olá, {{ pedido.solicitante_nome }}.
+
+O pedido {{ pedido.numero }} foi concluído em {{ pedido.concluido_em.strftime('%d/%m/%Y') }}.
+{% set loc = (pedido.dados_informados or {}).get('locatario') or {} %}{% if pedido.tipo.value == 'inclusao_locatario' %}
+{{ loc.nome }} passou a constar como locatário e responsável pela unidade, no cadastro da administradora e no aplicativo do condomínio, e vai receber o boleto do condomínio.
+O boleto continua em nome do pagador atual.
+{% elif pedido.tipo.value == 'saida_locatario' %}
+{{ loc.nome }} deixou de constar como locatário e responsável pela unidade, no cadastro da administradora e no aplicativo do condomínio.
+{% elif pedido.tipo_comprovante == 'contrato' %}
+Você passou a constar como responsável pela unidade desde {{ pedido.data_chaves.strftime('%d/%m/%Y') }}, data da entrega das chaves, e vai receber o boleto do condomínio.
+O boleto continua em nome do proprietário registrado até a matrícula mostrar a venda.
+Quando o registro sair, envie a certidão da matrícula por um novo pedido: você passa a proprietário e o boleto passa para o seu nome.
+{% else %}
+Você passou a constar como proprietário da unidade, e o boleto do condomínio passa para o seu nome e CPF ou CNPJ.
+{% endif %}
+{% if pedido.tipo.value == 'titularidade' %}Débitos anteriores do condomínio continuam ligados à unidade.
+O cadastro no aplicativo do condomínio também foi atualizado.{% endif %}
+
+A Condeza nunca pede senha nem pagamento por e-mail.

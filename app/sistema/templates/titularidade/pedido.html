@@ -1,0 +1,45 @@
+{% extends "base.html" %}{% from "_campos.html" import resumo_erros %}
+{% block titulo %}Pedido de mudança de titularidade{% endblock %}
+{% block conteudo %}
+<h1>Pedido de mudança de titularidade</h1>
+<p>Solicitante: <strong>{{ pedido.solicitante_nome }}</strong> · {{ pedido.solicitante_cpf_cnpj }}</p>
+{% if salvo %}<p class="sucesso" role="status">Rascunho salvo. Ele fica guardado por 30 dias.</p>{% endif %}
+{{ resumo_erros(erros) }}
+<form method="post" enctype="multipart/form-data" novalidate>
+  <fieldset>
+    <legend>1. Documento de identidade</legend>
+    {% set d = docs.get('identidade') %}
+    {% if d %}<p class="anexado">Anexado: {{ d.nome_original }}</p>{% endif %}
+    <label for="identidade">{{ 'Trocar o arquivo' if d else 'Anexar' }} (PDF ou foto)</label>
+    <input id="identidade" name="identidade" type="file" accept="application/pdf,image/jpeg,image/png" {% if 'identidade' in erros %}aria-invalid="true" aria-describedby="identidade-erro"{% endif %}>
+    {% if 'identidade' in erros %}<p class="erro" id="identidade-erro">{{ erros.identidade }}</p>{% endif %}
+  </fieldset>
+  <fieldset id="tipo_comprovante" {% if 'tipo_comprovante' in erros %}aria-describedby="tipo_comprovante-erro"{% endif %}>
+    <legend>2. Comprovante da compra</legend>
+    <label class="opcao"><input type="radio" name="tipo_comprovante" value="matricula" {{ 'checked' if pedido.tipo_comprovante == 'matricula' }}>
+      Certidão de matrícula com a compra registrada, emitida há até 30 dias</label>
+    <label class="opcao"><input type="radio" name="tipo_comprovante" value="contrato" {{ 'checked' if pedido.tipo_comprovante == 'contrato' }}>
+      Contrato de compra e venda com firma reconhecida ou assinatura digital certificada</label>
+    {% if 'tipo_comprovante' in erros %}<p class="erro" id="tipo_comprovante-erro">{{ erros.tipo_comprovante }}</p>{% endif %}
+    {% for campo_doc, rotulo in [('matricula', 'Certidão de matrícula'), ('contrato', 'Contrato de compra e venda')] %}
+      {% set d = docs.get(campo_doc) %}
+      <div class="campo">
+        {% if d %}<p class="anexado">Anexado: {{ d.nome_original }}</p>{% endif %}
+        <label for="{{ campo_doc }}">{{ rotulo }}: {{ 'trocar o arquivo' if d else 'anexar' }} (PDF ou foto)</label>
+        <input id="{{ campo_doc }}" name="{{ campo_doc }}" type="file" accept="application/pdf,image/jpeg,image/png" {% if campo_doc in erros %}aria-invalid="true" aria-describedby="{{ campo_doc }}-erro"{% endif %}>
+        {% if campo_doc in erros %}<p class="erro" id="{{ campo_doc }}-erro">{{ erros[campo_doc] }}</p>{% endif %}
+      </div>
+    {% endfor %}
+    <div class="campo">
+      <label for="data_chaves">Data da entrega das chaves (obrigatória com contrato)</label>
+      <input id="data_chaves" name="data_chaves" type="date" value="{{ pedido.data_chaves or '' }}" {% if 'data_chaves' in erros %}aria-invalid="true" aria-describedby="data_chaves-erro"{% endif %}>
+      {% if 'data_chaves' in erros %}<p class="erro" id="data_chaves-erro">{{ erros.data_chaves }}</p>{% endif %}
+    </div>
+  </fieldset>
+  <div class="acoes">
+    <button name="acao" value="enviar">Enviar o pedido</button>
+    <button name="acao" value="salvar" class="secundario">Salvar e continuar depois</button>
+  </div>
+</form>
+{% endblock %}
+{% block secao_suporte %}titularidade{% endblock %}

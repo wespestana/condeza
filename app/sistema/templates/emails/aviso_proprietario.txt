@@ -1,0 +1,9 @@
+Olá, {{ nome }}.
+
+Foi aberto um pedido de mudança de titularidade da sua unidade (pedido {{ pedido.numero }}, em {{ pedido.recebido_em.strftime('%d/%m/%Y às %H:%M') }}).
+
+Se você vendeu a unidade, não precisa fazer nada.
+Se você NÃO reconhece este pedido, avise-nos por este link:
+{{ url }}
+
+A Condeza nunca pede senha nem pagamento por e-mail.

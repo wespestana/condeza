@@ -1,0 +1,10 @@
+Olá, {{ pedido.solicitante_nome }}.
+
+Para concluir o pedido {{ pedido.numero }}, precisamos de:
+{% for i in itens %}- {{ i }}
+{% endfor %}
+Para enviar, peça um novo link com o mesmo e-mail e CPF/CNPJ:
+{{ url }}
+
+Se não houver resposta em {{ dias }} dias, o pedido será encerrado como recusado.
+A Condeza nunca pede senha nem pagamento por e-mail.

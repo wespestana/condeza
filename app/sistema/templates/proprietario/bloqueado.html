@@ -1,0 +1,7 @@
+{% extends "base.html" %}{% block titulo %}Muitas tentativas{% endblock %}
+{% block conteudo %}
+<h1>Muitas tentativas de acesso</h1>
+<p>Por segurança, o acesso à Área do condômino foi bloqueado por {{ minutos }} minutos neste dispositivo. Depois, entre de novo com sua conta do condômino.</p>
+<p>Se precisar de ajuda agora, use o <a href="{{ url_for('suporte') }}">menu de suporte</a>.</p>
+{% endblock %}
+{% block secao_suporte %}acesso{% endblock %}

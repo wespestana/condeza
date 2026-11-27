@@ -1,0 +1,9 @@
+Olá, {{ nome }}.
+
+Recebemos seu pedido de link para a mudança de titularidade de uma unidade administrada pela Condeza.
+
+Para continuar, abra o link abaixo em até {{ horas }} horas. Ele pode ser usado uma vez:
+{{ url }}
+
+Se você não fez este pedido, ignore este e-mail.
+A Condeza nunca pede senha nem pagamento por e-mail.

@@ -1,0 +1,54 @@
+x-producao: &producao
+  PRODUCAO: "1"
+  URL_PUBLICA: https://${DOMINIO}
+
+services:
+  app:
+    command: gunicorn --workers 3 --bind 0.0.0.0:8000 --timeout 120 --access-logfile - "sistema:create_app()"
+    ports: !reset []
+    environment: *producao
+    restart: unless-stopped
+
+  worker:
+    environment: *producao
+    restart: unless-stopped
+
+  mysql:
+    ports: !reset []
+    restart: unless-stopped
+
+  ollama:
+    restart: unless-stopped
+
+  erp-simulado:
+    ports: !reset []
+    restart: unless-stopped
+
+  app-simulado:
+    ports: !reset []
+    restart: unless-stopped
+
+  mailpit:
+    ports: !reset []
+    environment:
+      MP_WEBROOT: /caixa/
+      MP_UI_AUTH: ${MAILPIT_USUARIO}:${MAILPIT_SENHA}
+    restart: unless-stopped
+
+  proxy:
+    image: caddy:2.8.4
+    environment:
+      DOMINIO: ${DOMINIO}
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./proxy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-dados:/data
+      - caddy-config:/config
+    depends_on: [app, mailpit]
+    restart: unless-stopped
+
+volumes:
+  caddy-dados:
+  caddy-config:

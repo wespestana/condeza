@@ -1,0 +1,22 @@
+{% extends "base.html" %}{% from "_ilustracoes.html" import icone %}
+{% block titulo %}Para síndicos{% endblock %}{% block classe_main %}site{% endblock %}
+{% block conteudo %}
+<p class="sobre">Para síndicos e conselhos</p>
+<h1>O que a Condeza faz pelo seu condomínio</h1>
+<p class="intro">Cada condomínio tem uma dupla de gerente e assistente que conhece a sua carteira. Por trás dela, as áreas da Condeza cuidam do dia a dia.</p>
+<ul class="grade-servicos">
+  <li>{{ icone('gerente', 36) }}<h2>Gerente dedicado</h2><p>Gerente e assistente como ponto de contato do síndico, com apoio às assembleias e encaminhamento das demandas.</p></li>
+  <li>{{ icone('contas', 36) }}<h2>Financeiro e prestação de contas</h2><p>Contas a pagar, conciliação bancária e a prestação de contas mensal de cada condomínio, com a parte fiscal das notas.</p></li>
+  <li>{{ icone('cobranca', 36) }}<h2>Cobrança</h2><p>Emissão dos boletos, segunda via, cobrança ativa, acordos e encaminhamento ao jurídico quando preciso.</p></li>
+  <li>{{ icone('engenharia', 36) }}<h2>Engenharia e obrigações legais</h2><p>AVCB, extintores, elevadores e demais obrigações periódicas, com contratação e fiscalização de prestadores e guarda dos laudos.</p></li>
+  <li>{{ icone('suprimentos', 36) }}<h2>Suprimentos</h2><p>Cotações com fornecedores e acompanhamento das compras do condomínio até a entrega.</p></li>
+  <li>{{ icone('pessoal', 36) }}<h2>Departamento pessoal</h2><p>Folha de pagamento, encargos e salários dos funcionários do condomínio.</p></li>
+</ul>
+<section class="chamada" aria-labelledby="t-troca">
+  <div class="chamada-icone">{{ icone('implantacao', 40) }}</div>
+  <div><h2 id="t-troca">Vai trocar de administradora?</h2>
+  <p>A área de Integração recebe a documentação e o cadastro da administradora anterior e implanta o condomínio nos sistemas, com o Cadastro e Emissão.</p>
+  <p><a class="botao" href="{{ url_for('site.contato') }}#proposta">Solicitar uma proposta</a></p></div>
+</section>
+{% endblock %}
+{% block secao_suporte %}assistido{% endblock %}

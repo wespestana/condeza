@@ -1,0 +1,10 @@
+Olá, {{ nome }}.
+
+A Tecnologia da Condeza criou sua conta na área da equipe do sistema de atualização cadastral.
+
+Para ativá-la, abra o link abaixo em até {{ horas }} horas. Ele pode ser usado uma vez:
+{{ url }}
+
+No link, você define a sua senha e cadastra o aplicativo autenticador do seu celular.
+Ninguém da Condeza vai pedir a sua senha nem o código do autenticador.
+Se você não esperava este e-mail, avise a Tecnologia por chamado.

@@ -1,0 +1,2 @@
+ALTER TABLE pendencia ADD COLUMN resposta TEXT NULL;
+ALTER TABLE pedido ADD COLUMN eliminado_em DATETIME NULL;

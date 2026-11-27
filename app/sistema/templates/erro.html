@@ -1,0 +1,13 @@
+{% extends "base.html" %}{% block titulo %}{{ {403: 'Acesso negado', 404: 'Página não encontrada', 405: 'Ação não permitida', 500: 'Erro no sistema'}[codigo] }}{% endblock %}
+{% block conteudo %}
+<h1>{{ {403: 'Acesso negado', 404: 'Página não encontrada', 405: 'Ação não permitida', 500: 'Algo deu errado do nosso lado'}[codigo] }}</h1>
+<p class="intro">{% if codigo == 403 %}Esta página não está disponível para a sua conta. Se você é o proprietário da unidade, entre de novo pela Área do condômino.
+{% elif codigo == 404 %}O endereço não existe ou mudou. Confira o link ou volte ao início.
+{% elif codigo == 405 %}Esta ação não pode ser feita por este caminho. Volte à página anterior e use o botão da própria tela.
+{% else %}Tente de novo em alguns minutos; se continuar, fale com o atendimento.{% endif %}</p>
+<ul class="acoes-lista">
+  <li><a class="botao" href="{{ url_for('site.inicio') }}">Ir para o início</a></li>
+  <li><a href="{{ url_for('suporte') }}">Ajuda</a></li>
+  <li>Atendimento: (11) 3000-0000 · dias úteis, 8h às 18h</li>
+</ul>
+{% endblock %}

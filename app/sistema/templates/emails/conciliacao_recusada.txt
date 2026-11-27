@@ -1,0 +1,7 @@
+{% set c = pedido.dados_informados.conciliacao %}{% set nomes = c.itens|map(attribute='campo')|map('replace', 'endereco_correspondencia', 'endereço de correspondência')|map('replace', 'email', 'e-mail')|list %}Olá, {{ pedido.solicitante_nome }}.
+
+{{ 'A alteração' if nomes|length == 1 else 'As alterações' }} de {{ (nomes[:-1]|join(', ') ~ ' e ' ~ nomes[-1]) if nomes|length > 1 else nomes[0] }} feita{{ 's' if nomes|length > 1 }} no aplicativo do condomínio em {{ c.alterado_em[8:10] }}/{{ c.alterado_em[5:7] }}/{{ c.alterado_em[:4] }} não {{ 'foi aceita' if nomes|length == 1 else 'foram aceitas' }} no cadastro da administradora.
+Motivo: {{ pedido.motivo_recusa }}
+
+O cadastro da administradora continua com {{ 'o valor anterior' if nomes|length == 1 else 'os valores anteriores' }}. Para corrigir, altere de novo no aplicativo ou fale com a Condeza pelos canais oficiais.
+A Condeza nunca pede senha nem pagamento por e-mail.

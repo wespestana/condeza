@@ -1,0 +1,23 @@
+{% extends "base.html" %}{% from "_campos.html" import resumo_erros %}
+{% block titulo %}Responder à pendência{% endblock %}
+{% block conteudo %}
+<p><a href="{{ url_for('proprietario.area') }}">Voltar à Área do condômino</a></p>
+<h1>Pedido {{ pedido.numero }}: responder à pendência</h1>
+<h2>O que falta</h2>
+<ul>{% for x in abertas %}<li>{{ x.descricao }}</li>{% endfor %}</ul>
+{{ resumo_erros(erros) }}
+<form method="post" enctype="multipart/form-data" novalidate>
+  <div class="campo{{ ' com-erro' if 'contrato' in erros }}">
+    <label for="contrato">Contrato de locação: enviar outro arquivo (opcional)</label>
+    <input id="contrato" name="contrato" type="file" accept="application/pdf,image/jpeg,image/png" {% if 'contrato' in erros %}aria-invalid="true" aria-describedby="contrato-erro"{% endif %}>
+    {% if 'contrato' in erros %}<p class="erro" id="contrato-erro">{{ erros.contrato }}</p>{% endif %}
+  </div>
+  <div class="campo{{ ' com-erro' if 'resposta' in erros }}">
+    <label for="resposta">Mensagem para a equipe (opcional)</label>
+    <textarea id="resposta" name="resposta" rows="3" maxlength="2000" {% if 'resposta' in erros %}aria-invalid="true" aria-describedby="resposta-erro"{% endif %}>{{ texto }}</textarea>
+    {% if 'resposta' in erros %}<p class="erro" id="resposta-erro">{{ erros.resposta }}</p>{% endif %}
+  </div>
+  <button>Enviar a resposta</button>
+</form>
+{% endblock %}
+{% block secao_suporte %}pendencia{% endblock %}

@@ -1,0 +1,1 @@
+ALTER TABLE campo ADD COLUMN conferencia VARCHAR(12) NULL, ADD COLUMN observacao TEXT NULL;

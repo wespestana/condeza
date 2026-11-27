@@ -1,0 +1,7 @@
+{% extends "base.html" %}{% block titulo %}Resposta recebida{% endblock %}
+{% block conteudo %}
+<h1>Resposta recebida</h1>
+<p class="sucesso" role="status">A resposta ao pedido <strong>{{ pedido.numero }}</strong> foi recebida e o pedido voltou para a conferência.</p>
+<p>Você vai receber um e-mail quando o pedido for concluído ou se faltar mais alguma coisa.</p>
+{% endblock %}
+{% block secao_suporte %}pendencia{% endblock %}

@@ -1,0 +1,7 @@
+{% extends "base.html" %}{% block titulo %}Continuar o pedido{% endblock %}
+{% block conteudo %}
+<h1>Continuar o pedido de mudança de titularidade</h1>
+<p>Ao clicar em <strong>Continuar</strong>, este link é usado e deixa de valer. Você poderá salvar e voltar depois com um novo link.</p>
+<form method="post" action="{{ url_for('titularidade.usar_link', token=token) }}"><button>Continuar</button></form>
+{% endblock %}
+{% block secao_suporte %}titularidade{% endblock %}

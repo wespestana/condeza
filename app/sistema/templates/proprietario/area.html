@@ -1,0 +1,49 @@
+{% extends "base.html" %}{% from "_ilustracoes.html" import icone %}
+{% block titulo %}Área do condômino{% endblock %}{% block classe_main %}site{% endblock %}
+{% block conteudo %}
+{% include "proprietario/_barra.html" %}
+<h1>Minhas unidades</h1>
+{% if com_pendencia %}
+<section class="alerta" aria-labelledby="t-pend">
+  <h2 id="t-pend">Pedidos esperando sua resposta</h2>
+  <ul>{% for p in com_pendencia %}<li>Pedido {{ p.numero }}: <a href="{{ url_for('proprietario.responder', pid=p.id) }}">responder à pendência</a></li>{% endfor %}</ul>
+</section>
+{% endif %}
+{% set donos = unidades|map(attribute='id')|list %}
+{% for u in unidades %}
+<section class="unidade" aria-labelledby="u{{ u.id }}">
+  <h2 id="u{{ u.id }}">{{ icone('predio', 30) }} {{ u.tipo }} {{ u.numero }}{{ ', Bloco ' ~ u.bloco if u.bloco }} · {{ condominios.get(u.condominio_id, '') }}</h2>
+  <div class="duas-colunas">
+    <div><h3>Responsáveis no cadastro da administradora</h3>
+      <ul>{% for r in u.responsaveis %}<li>{{ r.nome }} · {{ r.papel|rotulo }}{{ ', pagador do boleto' if r.pagador }}</li>{% endfor %}</ul></div>
+    <div><h3>Como está no aplicativo</h3>
+      {% set app_u = (no_app.unidades|selectattr('id', 'equalto', u.id)|list)|first %}
+      {% if app_u %}<ul>{% for r in app_u.responsaveis %}<li>{{ r.nome }} · {{ r.papel|rotulo }}</li>{% endfor %}</ul>
+      {% else %}<p class="ajuda">Esta unidade ainda não aparece na sua conta do aplicativo.</p>{% endif %}</div>
+  </div>
+  <h3>Locatário</h3>
+  {% set locs = u.responsaveis|selectattr('papel', 'equalto', 'locatario')|list %}
+  <ul class="acoes-lista">
+    <li><a class="botao" href="{{ url_for('proprietario.incluir', uid=u.id) }}">Incluir locatário</a></li>
+    {% for l in locs %}
+      <li>{% if (u.id, l.cpf_cnpj, TipoPedido.SAIDA_LOCATARIO) in em_andamento %}Saída de {{ l.nome }}: pedido em conferência
+          {% else %}<a href="{{ url_for('proprietario.saida', uid=u.id, indice=loop.index0) }}">Informar a saída de {{ l.nome }}</a>{% endif %}</li>
+    {% endfor %}
+  </ul>
+</section>
+{% endfor %}
+{% for a in no_app.unidades if a.id not in donos %}{% set ru = rotulos.get(a.id) %}
+<section class="unidade" aria-labelledby="o{{ a.id }}">
+  <h2 id="o{{ a.id }}">{{ icone('predio', 30) }} {{ (ru.tipo ~ ' ' ~ ru.numero ~ (', Bloco ' ~ ru.bloco if ru.bloco else '')) if ru else 'Unidade ' ~ a.id }}</h2>
+  <h3>Como está no aplicativo</h3>
+  <ul>{% for r in a.responsaveis %}<li>{{ r.nome }} · {{ r.papel|rotulo }}</li>{% endfor %}</ul>
+  <p class="ajuda">Você não é proprietário desta unidade no cadastro da administradora: a inclusão e a saída de locatário são feitas pelo proprietário.</p>
+</section>
+{% endfor %}
+{% if not unidades and not no_app.unidades %}
+<p>Não encontramos unidades ligadas a você. Comprou uma unidade? <a href="{{ url_for('titularidade.pedir_link') }}">Peça a mudança de titularidade</a>.</p>
+{% endif %}
+<section class="chamada"><div class="chamada-icone">{{ icone('boleto', 36) }}</div>
+  <div><h2>Boletos e comunicados</h2><p>A segunda via, as reservas e os comunicados ficam no aplicativo do condomínio.</p></div></section>
+{% endblock %}
+{% block secao_suporte %}proprietario{% endblock %}

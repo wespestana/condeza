@@ -1,0 +1,11 @@
+Olá, {{ pedido.solicitante_nome }}.
+
+{% set loc = (pedido.dados_informados or {}).get('locatario') or {} %}{% if pedido.tipo.value == 'inclusao_locatario' %}Recebemos seu pedido de inclusão de {{ loc.nome }} como locatário da unidade {{ pedido.dados_informados.numero }}{{ ' bloco ' ~ pedido.dados_informados.bloco if pedido.dados_informados.bloco }}.{% elif pedido.tipo.value == 'saida_locatario' %}Recebemos a informação de saída de {{ loc.nome }}, locatário da unidade {{ pedido.dados_informados.numero }}{{ ' bloco ' ~ pedido.dados_informados.bloco if pedido.dados_informados.bloco }}.{% else %}Recebemos seu pedido de mudança de titularidade.{% endif %}
+
+Número: {{ pedido.numero }}
+Recebido em: {{ pedido.recebido_em.strftime('%d/%m/%Y às %H:%M') }}
+
+Guarde este e-mail: ele é o comprovante do recebimento.
+Você só receberá outro e-mail se faltar algum documento ou quando o pedido for concluído ou recusado.
+
+A Condeza nunca pede senha nem pagamento por e-mail.

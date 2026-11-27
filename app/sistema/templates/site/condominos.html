@@ -1,0 +1,20 @@
+{% extends "base.html" %}{% block titulo %}Para condôminos{% endblock %}{% block classe_main %}site{% endblock %}
+{% block conteudo %}
+<h1>Para condôminos</h1>
+<section aria-labelledby="conta"><h2 id="conta">Sua conta do condômino</h2>
+  <p>A conta do condômino é a mesma do aplicativo do condomínio, onde ficam boletos, reservas, comunicados e assembleias virtuais. Com ela você entra, pelo site, na Área do condômino e nos seus dados de contato.</p>
+  <p><a class="botao" href="{{ url_entrar_proprietario }}">Entrar na Área do condômino</a></p></section>
+<section aria-labelledby="boleto"><h2 id="boleto">2ª via de boleto</h2>
+  <p>A segunda via fica na sua conta do condômino, a mesma do aplicativo, junto com os comunicados e as reservas. Se o boleto estiver em nome de quem não mora mais na unidade, peça a mudança de titularidade ou a inclusão do locatário.</p>
+  <p><a class="botao secundario" href="{{ url_entrar_proprietario }}">Entrar na Área do condômino</a></p></section>
+<section aria-labelledby="titularidade"><h2 id="titularidade">Comprou uma unidade?</h2>
+  <p>Peça a mudança de titularidade com a certidão de matrícula (emitida há até 30 dias) ou com o contrato de compra e venda com firma reconhecida ou assinatura digital. Com o contrato, você passa a receber o boleto desde a entrega das chaves; o boleto vai para o seu nome quando a matrícula mostrar a compra.</p>
+  <p><a href="{{ url_for('titularidade.pedir_link') }}">Pedir a mudança de titularidade</a></p></section>
+<section aria-labelledby="locatario"><h2 id="locatario">Alugou sua unidade?</h2>
+  <p>O proprietário inclui o locatário pela <a href="{{ url_entrar_proprietario }}">Área do condômino</a>, com o contrato de locação. O locatário passa a receber o boleto do condomínio, que continua em nome do pagador. Na saída do locatário, basta o proprietário informar.</p></section>
+<section aria-labelledby="contatos"><h2 id="contatos">Mudou de e-mail, telefone ou endereço?</h2>
+  <p>Altere em <a href="{{ url_meus_dados }}">Meus dados</a>, na sua conta do condômino. A equipe do Cadastro e Emissão confere a alteração antes de levá-la ao cadastro da administradora, para que avisos e boletos não sejam desviados. Se a alteração não for aceita, você recebe um e-mail com o motivo.</p></section>
+<section aria-labelledby="golpe"><h2 id="golpe">Cuidado com golpes</h2>
+  <p>A Condeza nunca pede senha nem pagamento por e-mail. Quando alguém pede a mudança de titularidade da sua unidade, você recebe um aviso e pode informar que não reconhece o pedido.</p></section>
+{% endblock %}
+{% block secao_suporte %}inicio{% endblock %}

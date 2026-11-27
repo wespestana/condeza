@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block titulo %}Situação dos serviços{% endblock %}
+{% block conteudo %}
+<h1>Situação dos serviços</h1>
+<table>
+  <thead><tr><th scope="col">Serviço</th><th scope="col">Situação</th></tr></thead>
+  <tbody>
+  {% for nome, estado in itens.items() %}
+    <tr><td>{{ nome }}</td><td class="{{ 'ok' if estado == 'ok' else 'falha' }}">{{ estado }}</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+<p>IA {{ "habilitada" if ia_habilitada else "desligada por configuração (conferência manual)" }}.</p>
+{% endblock %}

@@ -1,0 +1,11 @@
+{% extends "base.html" %}{% block titulo %}Não reconheço este pedido{% endblock %}
+{% block conteudo %}
+<h1>Não reconheço este pedido</h1>
+{% if ja %}<p class="sucesso" role="status">Sua contestação já foi registrada. O pedido não será concluído sem análise.</p>
+{% else %}
+<p>Confirme apenas se você <strong>não</strong> reconhece o pedido de mudança de titularidade da sua unidade. O pedido não será concluído sem análise do Cadastro e Emissão.</p>
+<form method="post"><button>Confirmar: não reconheço este pedido</button></form>
+{% endif %}
+<p class="aviso">A Condeza nunca pede senha nem pagamento por e-mail.</p>
+{% endblock %}
+{% block secao_suporte %}contestacao{% endblock %}

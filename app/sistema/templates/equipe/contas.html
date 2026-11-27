@@ -1,0 +1,43 @@
+{% extends "equipe/base_equipe.html" %}{% block titulo %}Contas da equipe{% endblock %}
+{% block equipe %}
+<h1>Contas da equipe</h1>
+<p class="ajuda">Cada conta é de uma pessoa, com senha e segundo fator definidos por ela mesma no link de ativação, válido por {{ horas }} horas e de uso único. Nenhuma conta é apagada: a trilha aponta para ela.</p>
+
+<section class="cartao" aria-labelledby="t-criar">
+  <h2 id="t-criar">Criar conta</h2>
+  <form method="post" action="{{ url_for('contas.criar') }}">
+    <div class="campo"><label for="nome">Nome completo</label><input id="nome" name="nome" autocomplete="off" required value="{{ dados.get('nome') or '' }}"></div>
+    <div class="campo"><label for="email">E-mail corporativo</label><input id="email" name="email" type="email" autocomplete="off" required value="{{ dados.get('email') or '' }}"></div>
+    <div class="campo"><label for="perfil">Perfil</label>
+      <select id="perfil" name="perfil" required aria-describedby="perfil-ajuda"><option value="">Escolha</option>
+        {% for v in ['conferente', 'gerente', 'tecnologia'] %}<option value="{{ v }}" {{ 'selected' if dados.get('perfil') == v }}>{{ v|rotulo }}</option>{% endfor %}
+      </select>
+      <p class="ajuda" id="perfil-ajuda">Para o gerente da carteira, use o mesmo e-mail cadastrado no ERP: é por ele que o sistema encontra a carteira.</p></div>
+    <button>Criar conta e enviar o link</button>
+  </form>
+</section>
+
+<section aria-labelledby="t-contas">
+<h2 id="t-contas">Contas</h2>
+<table class="contas">
+  <thead><tr><th scope="col">Nome</th><th scope="col">E-mail</th><th scope="col">Perfil</th><th scope="col">Situação</th><th scope="col">Ações</th></tr></thead>
+  <tbody>{% for u in contas %}{% set sit = situacao(u) %}<tr>
+    <td>{{ u.nome }}</td><td>{{ u.email.split('@')[0] }}@<wbr>{{ u.email.split('@')[1] }}</td><td>{{ u.perfil.value|rotulo }}</td>
+    <td>{% if sit == 'ativa' %}<span class="ok">ativa</span>{% elif sit == 'desativada' %}<span class="falha">desativada</span>{% else %}aguardando ativação{% endif %}</td>
+    <td class="acoes">{% if u.id == eu %}<span class="ajuda">sua conta</span>{% else %}
+      {% if u.ativo %}<form method="post" action="{{ url_for('contas.reenviar', conta_id=u.id) }}" class="em-linha"><button class="secundario" aria-label="Reenviar link de ativação para {{ u.nome }}">Novo link</button></form>{% endif %}
+      <form method="post" action="{{ url_for('contas.alternar', conta_id=u.id) }}" class="em-linha"><button class="secundario" aria-label="{{ 'Desativar' if u.ativo else 'Reativar' }} a conta de {{ u.nome }}">{{ 'Desativar' if u.ativo else 'Reativar' }}</button></form>
+    {% endif %}</td></tr>{% endfor %}</tbody>
+</table>
+<p class="ajuda">Novo link serve para o primeiro acesso vencido ou para quem perdeu o celular: a senha e o autenticador anteriores deixam de valer na hora.</p>
+</section>
+
+<section aria-labelledby="t-registro">
+<h2 id="t-registro">Últimos registros das contas</h2>
+<table class="contas">
+  <thead><tr><th scope="col">Data e hora</th><th scope="col">Evento</th><th scope="col">Autor</th><th scope="col">Detalhes</th></tr></thead>
+  <tbody>{% for e in eventos %}<tr><td class="nao-quebra">{{ e.criado_em.strftime('%d/%m/%Y %H:%M') }}</td><td>{{ e.tipo|evento }}</td><td>{{ e.autor }}</td><td class="quebra">{{ e.detalhe|detalhe }}</td></tr>
+  {% else %}<tr><td colspan="4">Nenhum registro ainda.</td></tr>{% endfor %}</tbody>
+</table>
+</section>
+{% endblock %}

@@ -1,0 +1,21 @@
+{% extends "base.html" %}{% from "_campos.html" import campo, resumo_erros %}
+{% block titulo %}Incluir locatário{% endblock %}
+{% block conteudo %}
+<p><a href="{{ url_for('proprietario.area') }}">Voltar à Área do condômino</a></p>
+<h1>Incluir locatário: {{ unidade.tipo }} {{ unidade.numero }}{{ ', Bloco ' ~ unidade.bloco if unidade.bloco }}</h1>
+<p>O locatário passa a ser responsável pela unidade e a receber o boleto do condomínio. O boleto continua em nome do pagador atual.</p>
+{{ resumo_erros(erros) }}
+<form method="post" enctype="multipart/form-data" novalidate>
+  {{ campo("nome", "Nome completo do locatário", erros, dados) }}
+  {{ campo("cpf_cnpj", "CPF ou CNPJ do locatário", erros, dados, attrs='inputmode="numeric"') }}
+  {{ campo("email", "E-mail do locatário", erros, dados, tipo="email") }}
+  {{ campo("telefone", "Telefone do locatário (opcional)", erros, dados, tipo="tel") }}
+  <div class="campo{{ ' com-erro' if 'contrato' in erros }}">
+    <label for="contrato">Contrato de locação (PDF ou foto, até 10 MB)</label>
+    <input id="contrato" name="contrato" type="file" accept="application/pdf,image/jpeg,image/png" {% if 'contrato' in erros %}aria-invalid="true" aria-describedby="contrato-erro"{% endif %}>
+    {% if 'contrato' in erros %}<p class="erro" id="contrato-erro">{{ erros.contrato }}</p>{% endif %}
+  </div>
+  <button>Enviar o pedido</button>
+</form>
+{% endblock %}
+{% block secao_suporte %}proprietario{% endblock %}

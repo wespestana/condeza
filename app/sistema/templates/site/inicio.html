@@ -1,0 +1,53 @@
+{% extends "base.html" %}{% from "_ilustracoes.html" import predios, icone %}
+{% block titulo %}Início{% endblock %}{% block classe_main %}site{% endblock %}
+{% block conteudo %}
+<section class="abertura" aria-labelledby="t-abertura">
+  <div>
+    <p class="sobre">Administração de condomínios em São Paulo</p>
+    <h1 id="t-abertura">Cuidamos do seu condomínio desde 1996.</h1>
+    <p class="intro">Prestação de contas todo mês, cobrança, manutenção em dia e atendimento por pessoas. Para síndicos e para quem mora.</p>
+  </div>
+  <div class="abertura-arte">{{ predios() }}</div>
+</section>
+
+<section class="portas" aria-label="Escolha o seu perfil">
+  <a class="porta" href="#morador">{{ icone('casa', 40) }}<span><strong>Sou morador ou proprietário</strong>Titularidade, locatário, contatos e boleto</span></a>
+  <a class="porta" href="{{ url_for('site.sindicos') }}">{{ icone('predio', 40) }}<span><strong>Sou síndico</strong>Conheça a administração e peça uma proposta</span></a>
+</section>
+
+<section id="morador" aria-labelledby="t-morador">
+  <h2 id="t-morador">O que você precisa?</h2>
+  <ul class="servicos">
+    <li><a class="foco" href="{{ url_for('titularidade.pedir_link') }}"><strong>Comprei uma unidade</strong>
+        <span>Peça a mudança de titularidade com a matrícula ou o contrato de compra. Você recebe um link no e-mail.</span></a></li>
+    <li><a href="{{ url_entrar_proprietario }}"><strong>Sou proprietário: locatário</strong>
+        <span>Entre na Área do condômino e inclua ou retire o locatário da sua unidade.</span></a></li>
+    <li><a href="{{ url_meus_dados }}"><strong>Atualizar meus contatos</strong>
+        <span>Altere e-mail, telefone ou endereço de correspondência. A Condeza confere antes de levar ao cadastro.</span></a></li>
+    <li><a href="{{ url_for('suporte') }}"><strong>Preciso de ajuda</strong>
+        <span>Passo a passo de cada serviço e atendimento por uma pessoa, se preferir.</span></a></li>
+  </ul>
+</section>
+
+<section class="numeros" aria-label="A Condeza em números">
+  <p><strong>1996</strong>fundada em São Paulo</p>
+  <p><strong>~120</strong>condomínios residenciais e comerciais</p>
+  <p><strong>78</strong>pessoas na equipe</p>
+  <p><strong>2016</strong>certificação setorial com auditoria externa</p>
+</section>
+
+<section aria-labelledby="t-transp">
+  <h2 id="t-transp">Transparência em três passos</h2>
+  <ol class="passos">
+    <li>{{ icone('aplicativo', 34) }}<strong>Boleto e comunicados no aplicativo</strong><span>Segunda via, reservas e avisos na conta do condômino.</span></li>
+    <li>{{ icone('calendario', 34) }}<strong>Prestação de contas todo mês</strong><span>Cada condomínio recebe a demonstração mensal de como os recursos foram usados.</span></li>
+    <li>{{ icone('assembleia', 34) }}<strong>Assembleias virtuais e híbridas</strong><span>Participe de onde estiver, com registro do que foi decidido.</span></li>
+  </ol>
+</section>
+
+<section class="chamada" aria-labelledby="t-cuidado">
+  <div><h2 id="t-cuidado">Seus dados com cuidado</h2>
+  <p>Documentos ficam guardados só pelo tempo necessário e são conferidos pela equipe do Cadastro e Emissão. Toda decisão sobre o seu pedido é tomada por uma pessoa. <a href="{{ url_for('site.privacidade') }}">Como tratamos seus dados</a>.</p></div>
+</section>
+{% endblock %}
+{% block secao_suporte %}inicio{% endblock %}

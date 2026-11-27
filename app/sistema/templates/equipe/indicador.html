@@ -1,0 +1,23 @@
+{% extends "equipe/base_equipe.html" %}{% block titulo %}Indicador de prazo{% endblock %}
+{% block equipe %}
+<h1>Indicador de prazo · {{ '%02d'|format(mes) }}/{{ ano }}</h1>
+<form method="get" class="filtro"><label for="mes">Mês</label>
+  <input id="mes" name="mes" type="month" value="{{ ano }}-{{ '%02d'|format(mes) }}"><button class="secundario">Ver</button></form>
+<p class="ajuda">Pedidos concluídos no mês em até 5 dias úteis após a documentação completa. O tempo com pendência não conta (o prazo recomeça com a resposta); o escalonamento não pausa.</p>
+<table>
+  <caption>Concluídos no prazo</caption>
+  <thead><tr><th scope="col">Tipo</th><th scope="col" class="num">Concluídos</th><th scope="col" class="num">No prazo</th><th scope="col" class="num">Percentual</th></tr></thead>
+  <tbody>
+  {% for t, x in r.por_tipo.items() %}<tr><th scope="row">{{ t|rotulo|capitalize }}</th><td class="num">{{ x.concluidos }}</td><td class="num">{{ x.no_prazo }}</td><td class="num">{{ x.percentual }}%</td></tr>{% endfor %}
+  <tr><th scope="row"><strong>Total</strong></th><td class="num">{{ r.total.concluidos }}</td><td class="num">{{ r.total.no_prazo }}</td><td class="num"><strong>{{ (r.total.percentual ~ '%') if r.total.percentual is not none else '—' }}</strong></td></tr>
+  </tbody>
+</table>
+<h2>Pedidos do mês</h2>
+<table>
+  <thead><tr><th scope="col">Pedido</th><th scope="col">Tipo</th><th scope="col">Prazo</th><th scope="col">Concluído em</th><th scope="col">Resultado</th></tr></thead>
+  <tbody>{% for p, ok in r.pedidos %}<tr><td class="nao-quebra"><a href="{{ url_for('equipe.detalhe', pedido_id=p.id) }}">{{ p.numero }}</a></td><td>{{ p.tipo|rotulo|capitalize }}</td>
+    <td>{{ prazos.prazos(p).conclusao.strftime('%d/%m') }}</td><td>{{ p.concluido_em.strftime('%d/%m %H:%M') }}</td>
+    <td>{% if ok %}<span class="ok">no prazo</span>{% else %}<span class="falha">fora do prazo</span>{% endif %}</td></tr>
+  {% else %}<tr><td colspan="5">Nenhum pedido concluído no mês.</td></tr>{% endfor %}</tbody>
+</table>
+{% endblock %}
